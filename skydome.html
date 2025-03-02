@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skydome Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+
+        /* 버튼 스타일 */
+        .back-button {
+            position: absolute;
+            bottom: 10px;  /* 버튼을 화면 아래로 조금 더 내림 */
+            left: 20px;
+            font-size: 50px;
+            color: white;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 15px;  /* 버튼을 얇게 만들기 */
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        /* 세련된 < 모양을 만들기 위한 스타일 */
+        .back-button::before {
+            content: "<";
+            font-size: 60px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+
+        /* 호버 시 글로우 효과 */
+        .back-button:hover::before {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 돌아가기 버튼 -->
+    <button class="back-button" onclick="window.location.href='index.html'"></button>
+
+    <script>
+        // 🚀 Three.js 기본 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 5000); // fov를 90으로 확대
+        camera.position.set(0, 0, 500); // 카메라 위치를 더 멀리 설정 (500)
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 🌌 Skydome 텍스처 로드
+        const textureLoader = new THREE.TextureLoader();
+        const skydomeTexture = textureLoader.load('2.jpg'); // 360° 파노라마 이미지
+
+        // 🏔️ Skydome (구형) - 크기를 더 크게 설정
+        const geometry = new THREE.SphereGeometry(3000, 60, 40); // 더 큰 크기 설정 (3000)
+        const material = new THREE.MeshBasicMaterial({
+            map: skydomeTexture,
+            side: THREE.BackSide // 내부에서 보이도록 설정
+        });
+        const skydome = new THREE.Mesh(geometry, material);
+        scene.add(skydome);
+
+        // 🕹️ 카메라 컨트롤 (부드러운 움직임)
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.maxDistance = 350; // 줌 거리 확대
+        controls.minDistance = 50; // 줌 최소 거리
+
+        // 🎬 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 🔄 윈도우 리사이즈 대응
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        // 🎶 배경음악 추가
+        const audio = new Audio('alien-language-modulations-and-sound-effects-56291.mp3'); // 배경음악 파일명 입력
+        audio.loop = true; // 반복 재생 설정
+
+        // 화면 클릭 시 배경음악 재생
+        document.body.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play(); // 음악이 멈춰 있으면 재생
+            }
+        });
+    </script>
+</body>
+</html>

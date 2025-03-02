@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Skybox</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script>
+        // 🚀 Three.js 기본 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000); // 더 멀리까지 보이도록 설정
+        camera.position.set(0, 0, 30); // 카메라 위치를 좀 더 멀리 설정
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 🌌 Skybox 텍스처 로드 (seamless 연결)
+        const loader = new THREE.CubeTextureLoader();
+        const skyboxTexture = loader.load([
+            'lf.jpg', // +X
+            'rt.jpg', // -X
+            'up.jpg', // +Y
+            'dn.jpg', // -Y
+            'ft.jpg', // +Z
+            'bk.jpg'  // -Z
+        ]);
+        skyboxTexture.mapping = THREE.CubeReflectionMapping;
+        scene.background = skyboxTexture;
+
+        // 🕹️ 카메라 컨트롤 (부드러운 이동)
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.maxDistance = 50; // 줌 거리 제한
+        controls.minDistance = 10; // 최소 줌 거리
+
+        // 🎬 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 🔄 윈도우 리사이즈 대응
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
