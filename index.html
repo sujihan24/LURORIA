@@ -6,7 +6,7 @@
 <title>Particle Vortex Effect</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Dyphilleia&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dyphylleia&display=swap" rel="stylesheet">
 <style>
 body { margin: 0; overflow: hidden; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
 canvas { display: block; }
@@ -139,6 +139,7 @@ gap: 20px; /* 간격 넓힘 */
 z-index: 100;
 opacity: 0;
 transition: opacity 0.5s ease;
+transform: translateX(-50%); /* 가운데 정렬을 위해 추가 */
  }
 .choice-btn {
 font-family: 'Courier New', monospace;
@@ -232,50 +233,136 @@ audio.play();
  }
  }
  });
+
+// THREE.js 설정
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 8;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// 성능 최적화를 위한 변수
 const particles = [];
-const particleCount = 3000;
-const geometry = new THREE.SphereGeometry(0.018, 8, 8); // 입자 크기 키움
+const maxParticles = 2500; // 최대 입자 수 제한
+const particlePool = []; // 재사용할 입자 풀
+const geometry = new THREE.SphereGeometry(0.018, 6, 6); // 입자 해상도 낮춤
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+// 입자 생성 및 재사용 함수
+function getParticle() {
+  if (particlePool.length > 0) {
+    // 입자 풀에서 재사용
+    const particle = particlePool.pop();
+    particle.visible = true;
+    return particle;
+  } else {
+    // 새 입자 생성
+    const particle = new THREE.Mesh(geometry, material);
+    scene.add(particle);
+    return particle;
+  }
+}
+
+// 입자를 풀로 반환
+function returnParticle(particle) {
+  particle.visible = false;
+  particlePool.push(particle);
+}
+
+// 도넛 형태의 입자 그룹 생성
 function createDonut(radiusMultiplier) {
-const donutParticles = [];
-for (let i = 0; i < 500; i++) {
-const angle = (i % 100) / 100 * Math.PI * 2;
-const radius = (Math.floor(i / 100) * 0.5 + 1) * radiusMultiplier * 3;
-const particle = new THREE.Mesh(geometry, material);
-particle.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -Math.random() * 2);
-scene.add(particle);
-particles.push(particle);
-donutParticles.push(particle);
- }
-return donutParticles;
- }
+  const donutParticles = [];
+  const count = Math.min(500, maxParticles - particles.length);
+  
+  if (count <= 0) return donutParticles; // 입자 수 초과시 생성 중단
+  
+  for (let i = 0; i < count; i++) {
+    const angle = (i % 100) / 100 * Math.PI * 2;
+    const radius = (Math.floor(i / 100) * 0.5 + 1) * radiusMultiplier * 3;
+    const particle = getParticle();
+    particle.position.set(
+      Math.cos(angle) * radius, 
+      Math.sin(angle) * radius, 
+      -Math.random() * 2
+    );
+    particles.push(particle);
+    donutParticles.push(particle);
+  }
+  return donutParticles;
+}
+
+// 도넛 생성 및 애니메이션 설정
 function createAndAnimateDonuts() {
-setInterval(() => {
-const donut = createDonut(1.5 + Math.random());
-animateDonut(donut);
- }, 600);
- }
+  // 이전 인터벌 제거 (메모리 누수 방지)
+  if (window.donutInterval) {
+    clearInterval(window.donutInterval);
+  }
+  
+  window.donutInterval = setInterval(() => {
+    // 입자 수가 최대치보다 적을 때만 새 도넛 생성
+    if (particles.length < maxParticles) {
+      const donut = createDonut(1.5 + Math.random());
+      if (donut.length > 0) {
+        animateDonut(donut);
+      }
+    }
+  }, 800); // 생성 간격 늘림
+}
+
+// 애니메이션 루프
 function animate() {
-requestAnimationFrame(animate);
-particles.forEach((particle) => {
-particle.position.x *= 0.99;
-particle.position.y *= 0.99;
- });
-renderer.render(scene, camera);
- }
+  requestAnimationFrame(animate);
+  
+  // 각 입자 업데이트
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const particle = particles[i];
+    
+    // 입자 위치 업데이트 (중심으로 서서히 이동)
+    particle.position.x *= 0.99;
+    particle.position.y *= 0.99;
+    
+    // 중심에 너무 가까워지면 입자 제거
+    if (Math.abs(particle.position.x) < 0.1 && Math.abs(particle.position.y) < 0.1) {
+      returnParticle(particle);
+      particles.splice(i, 1);
+    }
+  }
+  
+  renderer.render(scene, camera);
+}
+
+// 입자 완전 리셋 함수
+function resetParticles() {
+  // 모든 입자를 풀로 반환
+  for (let i = particles.length - 1; i >= 0; i--) {
+    returnParticle(particles[i]);
+  }
+  particles.length = 0;
+  
+  // 새 입자 생성 시작
+  createAndAnimateDonuts();
+}
+
+// 초기 실행
 createAndAnimateDonuts();
 animate();
+
+// 입자 리셋 주기 연장 (20초 → 35초)
+setInterval(resetParticles, 35000);
+
+// 화면 크기 변경 이벤트
 window.addEventListener('resize', () => {
-renderer.setSize(window.innerWidth, window.innerHeight);
-camera.aspect = window.innerWidth / window.innerHeight;
-camera.updateProjectionMatrix();
- });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// 도넛 애니메이션 함수 (필요시 구현)
+function animateDonut(particles) {
+  // 애니메이션 로직이 필요한 경우 여기에 추가
+}
+
 const imageSources = [
  { src: "1.png", description: "Expansiophobia", url: "unpredicted.html", stars: 1 },
  { src: "2.png", description: "Multipliophobia", url: "poliferation.html", stars: 2, options: [
@@ -291,14 +378,16 @@ const imageSources = [
  { text: "Dark Ver.", url: "metro skydome.html" }
  ]},
  { src: "5.png", description: "Uncanny Valley", url: "https://example.com/page5", stars: 4, options: [
- { text: "Exhibition", url: "5_exhibition.html" },
+ { text: "Exhibition", url: "exhibiton_5.html" },
  { text: "Experience", url: "bug.html" }
  ]},
  { src: "6.png", description: "Mysophobia", url: "unclear.html", stars: 2 }
  ];
+
 const centerX = window.innerWidth / 2;
 const centerY = window.innerHeight / 2;
 const radius = 320; // 원형 배치 반경 키움
+
 // Function to create stars
 function createStars(container, count) {
 for (let i = 0; i < count; i++) {
@@ -307,14 +396,18 @@ star.classList.add("star");
 container.appendChild(star);
  }
  }
+
 // Create choice buttons for images with options
-function createChoiceButtons(img, x, y, options, isLeftSide) {
+function createChoiceButtons(img, x, y, options, index) {
 const buttonsContainer = document.createElement("div");
 buttonsContainer.classList.add("choice-buttons");
-// Position buttons with the image centered between them
-// Calculate total width of buttons to center the image properly
-buttonsContainer.style.left = `${x - 40}px`; // 이미지 중앙 기준으로 조정
-buttonsContainer.style.top = `${y + 180}px`; // 버튼 위치 더 아래로 조정
+
+// 이미지 중앙에 버튼을 정렬하기 위해 x 좌표 설정 - 이미지 중앙 좌표 사용
+buttonsContainer.style.left = `${x + 65}px`; // 이미지 중앙 위치 (이미지 너비의 절반 65px 추가)
+
+// 버튼과 이미지 사이 간격 줄임 - 버튼을 더 위로 올림
+buttonsContainer.style.top = `${y + 140}px`; // 이미지 아래 간격 줄임 (180px에서 140px로 변경)
+
 // Create buttons for each option
 options.forEach(option => {
 const button = document.createElement("button");
@@ -328,51 +421,71 @@ buttonsContainer.appendChild(button);
 document.body.appendChild(buttonsContainer);
 return buttonsContainer;
  }
+
 function createFloatingImages() {
 imageSources.forEach((data, index) => {
 const angle = (index / imageSources.length) * Math.PI * 2;
-const x = centerX + radius * Math.cos(angle) - 60; // 이미지 시작 위치 조정
-const y = centerY + radius * Math.sin(angle) - 60; // 이미지 시작 위치 조정
-// 수정된 부분: 이미지 번호에 따라 왼쪽/오른쪽 결정
-const isLeftSide = [3, 4, 5].includes(index + 1); // 3.png, 4.png, 5.png는 왼쪽에
+const x = centerX + radius * Math.cos(angle) - 65; // 이미지 중앙 위치 조정
+const y = centerY + radius * Math.sin(angle) - 65; // 이미지 중앙 위치 조정
 const img = document.createElement("img");
 img.src = data.src;
 img.classList.add("floating-image");
 img.style.left = `${x}px`;
 img.style.top = `${y}px`;
 img.dataset.index = index; // Store index for reference
-// 모든 이미지에 대해 일정한 간격 설정
-const descriptionDistance = 170; // 모든 이미지에 대해 일정한 거리
+
+// 설명창 위치 설정 - 이미지별 거리 조정
+let descriptionDistance = 170; // 기본 거리
+
+// 각 이미지별 description box 거리 조정
+if (index === 2) { // 3.png (Digital Horror)
+  descriptionDistance = 190; // 더 멀리 배치 (너무 가까운 것 수정)
+} else if (index === 3) { // 4.png (Jamais Vu)
+  descriptionDistance = 190; // 더 가깝게 배치 (너무 멀었던 것 수정)
+} else if (index === 4) { // 5.png
+  descriptionDistance = 220; // 그대로 유지
+}
+
 // Create and position description box
 const descriptionBox = document.createElement("div");
 descriptionBox.classList.add("description-box");
 descriptionBox.textContent = "";
-// 모든 이미지에 대해 동일한 간격으로 설정
+
+// 왼쪽/오른쪽 구분하여 설명창 위치 조정
+const isLeftSide = Math.cos(angle) > 0; // 화면 왼쪽/오른쪽 판단
 if (isLeftSide) {
-descriptionBox.style.left = `${x - descriptionDistance}px`; // 왼쪽에 description box
- } else {
-descriptionBox.style.left = `${x + descriptionDistance}px`; // 오른쪽에 description box
- }
-descriptionBox.style.top = `${y + 10}px`; // description box 위치 조정
+  descriptionBox.style.left = `${x + descriptionDistance}px`; // 오른쪽에 description box
+} else {
+  descriptionBox.style.left = `${x - descriptionDistance}px`; // 왼쪽에 description box
+}
+descriptionBox.style.top = `${y + 10}px`; // 모든 description box에 동일한 간격 적용
+
 document.body.appendChild(img);
 document.body.appendChild(descriptionBox);
-// Create stars container - 별 위치 수정
+
+// Create stars container - 별을 이미지 중앙 위에 위치시키기
 const starsContainer = document.createElement("div");
 starsContainer.classList.add("stars-container");
-starsContainer.style.left = `${x + 55}px`; // 별을 이미지 중앙에 위치
-starsContainer.style.top = `${y - 25}px`; // 별을 이미지 위에 위치
+// 별을 이미지 중앙 위에 위치시키기 위한 계산
+const starX = x + 65; // 이미지 중앙 X 좌표 (이미지 너비의 절반)
+const starY = y - 30; // 이미지 위쪽 Y 좌표 (고정된 간격)
+starsContainer.style.left = `${starX}px`; // 별을 이미지 중앙에 위치
+starsContainer.style.top = `${starY}px`; // 별을 이미지 위에 위치
 createStars(starsContainer, data.stars); // Create specified number of stars
 document.body.appendChild(starsContainer);
+
 // Create buttons for images with options but keep them hidden initially
 let choiceButtons = null;
 if (data.options && data.options.length > 0) {
-choiceButtons = createChoiceButtons(img, x, y, data.options, isLeftSide);
+choiceButtons = createChoiceButtons(img, x, y, data.options, index);
  }
+
 img.addEventListener("mouseover", () => {
 showDescriptionBox(descriptionBox, data.description);
 // Show stars when hovering over image
 gsap.to(starsContainer, { opacity: 1, duration: 0.3 });
  });
+
 img.addEventListener("mouseout", () => {
 hideDescriptionBox(descriptionBox);
 // Hide stars when not hovering
@@ -382,6 +495,7 @@ if (choiceButtons && !img.dataset.clicked) {
 gsap.to(choiceButtons, { opacity: 0, duration: 0.3 });
  }
  });
+
 img.addEventListener("click", () => {
 if (data.options && data.options.length > 0) {
 // Show the choice buttons with animation when image with options is clicked
@@ -416,12 +530,11 @@ document.addEventListener('click', hideOnClickOutside);
 showOverlayAndRedirect(data.url);
  }
  });
+
 animateFloatingImage(img, x, y);
  });
  }
-function animateDonut(particles) {
-// Animation logic can be added here if needed
- }
+
 function animateFloatingImage(img, baseX, baseY) {
 gsap.to(img, {
 x: () => Math.random() * 40 - 20, // 움직임 범위 키움
@@ -432,6 +545,7 @@ repeat: -1,
 ease: "sine.inOut"
  });
  }
+
 function showOverlayAndRedirect(url) {
 const overlay = document.getElementById("overlay");
 const koreanText = document.getElementById("korean-text");
@@ -457,6 +571,7 @@ window.location.href = url;
  }, 1000);
  });
  }
+
 function typeTextSimultaneously(koreanElement, koreanText, englishElement, englishText, callback) {
 koreanElement.style.fontSize = '25px'; // 더 크게 설정
 koreanElement.style.fontWeight = '200'; // 더 얇게 설정
@@ -468,7 +583,7 @@ let koreanIndex = 0;
 let englishIndex = 0;
 let isComplete = false;
 // 타이핑 속도를 조금 늦춤 (10ms → 20ms)
-const typeInterval = 14;
+const typeInterval = 20;
 function typeKorean() {
 if (koreanIndex < koreanText.length) {
 koreanElement.innerHTML += koreanText[koreanIndex];
@@ -493,59 +608,26 @@ if (callback) callback();
 typeKorean();
 typeEnglish();
  }
+
 function showDescriptionBox(descriptionBox, text) {
 descriptionBox.style.display = "block";
 descriptionBox.textContent = "";
 gsap.to(descriptionBox, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5 });
 typeDescription(descriptionBox, text, 0);
  }
+
 function hideDescriptionBox(descriptionBox) {
 gsap.to(descriptionBox, { opacity: 0, scale: 0.8, filter: "blur(10px)", duration: 0.5 });
  }
+
 function typeDescription(element, text, index) {
 if (index < text.length) {
 element.textContent += text[index];
 setTimeout(() => typeDescription(element, text, index + 1), 50);
  }
  }
+
 createFloatingImages();
-
- unction resetParticles() {
-// 더 부드러운 입자 사라짐 효과
-particles.forEach(particle => {
-// 각 입자를 무작위 시간에 페이드아웃
-const delay = Math.random() * 1.5; // 0-1.5초 사이 무작위 지연
-const duration = 1.5 + Math.random(); // 1.5-2.5초 사이 무작위 지속 시간
-// 입자가 서서히 축소되면서 사라지도록
-gsap.to(particle.scale, {
-x: 0.01,
-y: 0.01,
-z: 0.01,
-delay: delay,
-duration: duration,
-ease: "power2.out"
-});
-// 투명도 감소와 함께 색상도 서서히 변경
-gsap.to(particle.material, {
-opacity: 0,
-delay: delay,
-duration: duration,
-ease: "power2.out",
-onComplete: () => {
-scene.remove(particle);
-}
-});
-});
-
- 
-// 모든 입자가 페이드아웃된 후 배열 비우기 및 새 입자 생성
-setTimeout(() => {
-particles.length = 0;
-createAndAnimateDonuts();
-}, 2000); // 더 긴 시간 설정하여 모든 입자가 사라질 충분한 시간 확보
- }
-// 20초마다 리셋 실행
-setInterval(resetParticles, 12000);
 </script>
 </body>
 </html>
