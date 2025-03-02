@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Vortex Effect</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Dyphilleia&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; overflow: hidden; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
+canvas { display: block; }
+/* 텍스트 스타일 수정 */
+.overlay-text {
+font-family: 'Diphylleia', sans-serif;
+font-size: 25px;
+font-weight: lighter;
+line-height: 3.0;
+white-space: pre-line;
+color: white;
+ }
+.center-text {
+position: absolute;
+color: white;
+font-family: 'Courier New', monospace;
+font-size: 56px; /* 크기 키움 */
+font-weight: normal;
+text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);
+animation: irregularGlow 4s infinite alternate ease-in-out;
+ }
+.overlay-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+ }
+.overlay-text {
+font-family: 'Gulim', sans-serif;
+font-size: 25px; /* 크기 더 키움 */
+font-weight: 200; /* 더 얇게 설정 */
+line-height: 2.5;
+white-space: pre-line;
+color: white;
+ }
+.overlay-text-english {
+font-family: 'Courier New', monospace; /* 폰트 변경 */
+font-size: 23px; /* 크기 더 키움 */
+font-weight: 200; /* 더 얇게 설정 */
+line-height: 2.5;
+white-space: pre-line;
+color: rgba(255, 255, 255, 0.7);
+ }
+@keyframes irregularGlow {
+ 0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.4); }
+ 25% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 255, 255, 0.7); }
+ 50% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.5), 0 0 18px rgba(255, 255, 255, 0.3); }
+ 75% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.7), 0 0 22px rgba(255, 255, 255, 0.5); }
+ 100% { text-shadow: 0 0 9px rgba(255, 255, 255, 0.55), 0 0 19px rgba(255, 255, 255, 0.35); }
+ }
+.floating-image {
+position: absolute;
+width: 130px; /* 크기 키움 */
+height: auto;
+opacity: 1.0;
+ }
+.description-box {
+position: absolute;
+background-color: rgba(0, 0, 0, 0);
+color: white;
+font-family: 'Courier New', monospace;
+font-size: 20px; /* 크기 키움 */
+padding: 15px;
+border-radius: 50px;
+display: none;
+opacity: 0;
+transform: scale(0.8);
+box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+filter: blur(10px);
+transition: all 0.5s ease-in-out;
+white-space: nowrap;
+ }
+#overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.9);
+display: none;
+justify-content: center;
+align-items: center;
+color: white;
+font-family: 'Presentaiton', monospace;
+font-size: 36px;
+text-align: center;
+padding: 20px;
+box-sizing: border-box;
+z-index: 9999;
+font-family: 'Presentation', sans-serif;
+font-size: 36px;
+ }
+.options-box {
+position: absolute;
+bottom: 80px;
+left: 50%;
+transform: translateX(-50%);
+color: white;
+font-family: 'Courier New', monospace;
+font-size: 22px; /* 크기 키움 */
+display: none;
+text-align: center;
+z-index: 999;
+ }
+.options-box span {
+cursor: pointer;
+margin: 0 20px;
+padding: 12px 20px;
+border: 2px solid white;
+border-radius: 30px;
+transition: all 0.3s ease;
+display: inline-block;
+ }
+.options-box span:hover {
+color: #000;
+background-color: #fff;
+box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+ }
+.floating-image:hover {
+filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)); /* Glow 효과만 유지 */
+transition: filter 0.5s ease;
+ }
+/* Choice buttons styling - 크기 키움 */
+.choice-buttons {
+position: absolute;
+display: flex;
+justify-content: center;
+gap: 20px; /* 간격 넓힘 */
+z-index: 100;
+opacity: 0;
+transition: opacity 0.5s ease;
+ }
+.choice-btn {
+font-family: 'Courier New', monospace;
+font-size: 16px; /* 크기 키움 */
+color: white;
+background-color: transparent;
+border: 1px solid white;
+border-radius: 20px;
+padding: 8px 18px; /* 패딩 키움 */
+cursor: pointer;
+transition: all 0.3s ease;
+ }
+.choice-btn:hover {
+color: black;
+background-color: white;
+box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+ }
+/* Stars style - 위치 조정 및 크기 키움 */
+.stars-container {
+position: absolute;
+display: flex;
+gap: 10px; /* 간격 넓힘 */
+opacity: 0;
+transition: opacity 0.3s ease;
+ }
+.star {
+width: 18px; /* 크기 키움 */
+height: 18px; /* 크기 키움 */
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>');
+background-repeat: no-repeat;
+background-size: contain;
+animation: starGlow 1.5s infinite alternate ease-in-out;
+ }
+@keyframes starGlow {
+0% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7)); }
+100% { filter: drop-shadow(0 0 7px rgba(255, 255, 255, 1.0)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.7)); }
+ }
+</style>
+</head>
+<body>
+<audio id="bg-music" loop>
+<source src="scott-buckley-moonlight(chosic.com).mp3" type="audio/mp3">
+ Your browser does not support the audio element.
+</audio>
+<div class="center-text">LURORIA</div>
+<div id="overlay" class="overlay-container">
+<div id="korean-text" class="overlay-text"></div>
+<div id="english-text" class="overlay-text-english"></div>
+</div>
+<div class="options-box">
+<span id="head-option">Head</span>
+<span id="dot-option">Dot</span>
+</div>
+<script>
+// BGM 상태 체크 및 유지
+document.addEventListener("DOMContentLoaded", function() {
+const audio = document.getElementById("bg-music");
+const isBgmPlaying = localStorage.getItem('bgmPlaying') === 'true';
+if (isBgmPlaying) {
+audio.play();
+ }
+ });
+// 클릭 시 BGM 재생
+document.body.addEventListener("click", function() {
+const audio = document.getElementById("bg-music");
+if (audio.paused) {
+audio.play();
+localStorage.setItem('bgmPlaying', 'true');
+ }
+ });
+// 페이지 이동 전 BGM 상태 저장
+window.addEventListener("beforeunload", function() {
+const audio = document.getElementById("bg-music");
+if (!audio.paused) {
+localStorage.setItem('bgmPlaying', 'true');
+ } else {
+localStorage.setItem('bgmPlaying', 'false');
+ }
+ });
+// 페이지가 활성화되거나 비활성화될 때 BGM 상태 관리
+document.addEventListener('visibilitychange', function() {
+const audio = document.getElementById("bg-music");
+if (document.hidden) {
+// 페이지가 비활성화되면 BGM 일시 정지
+audio.pause();
+localStorage.setItem('bgmPlaying', 'false');
+ } else {
+// 페이지가 활성화되면 BGM 재생
+if (localStorage.getItem('bgmPlaying') === 'true') {
+audio.play();
+ }
+ }
+ });
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 8;
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+const particles = [];
+const particleCount = 3000;
+const geometry = new THREE.SphereGeometry(0.018, 8, 8); // 입자 크기 키움
+const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+function createDonut(radiusMultiplier) {
+const donutParticles = [];
+for (let i = 0; i < 500; i++) {
+const angle = (i % 100) / 100 * Math.PI * 2;
+const radius = (Math.floor(i / 100) * 0.5 + 1) * radiusMultiplier * 3;
+const particle = new THREE.Mesh(geometry, material);
+particle.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -Math.random() * 2);
+scene.add(particle);
+particles.push(particle);
+donutParticles.push(particle);
+ }
+return donutParticles;
+ }
+function createAndAnimateDonuts() {
+setInterval(() => {
+const donut = createDonut(1.5 + Math.random());
+animateDonut(donut);
+ }, 600);
+ }
+function animate() {
+requestAnimationFrame(animate);
+particles.forEach((particle) => {
+particle.position.x *= 0.99;
+particle.position.y *= 0.99;
+ });
+renderer.render(scene, camera);
+ }
+createAndAnimateDonuts();
+animate();
+window.addEventListener('resize', () => {
+renderer.setSize(window.innerWidth, window.innerHeight);
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+ });
+const imageSources = [
+ { src: "1.png", description: "Expansiophobia", url: "unpredicted.html", stars: 1 },
+ { src: "2.png", description: "Multipliophobia", url: "poliferation.html", stars: 2, options: [
+ { text: "Heads", url: "poliferation.html" },
+ { text: "Dots", url: "poliferation_2.html" }
+ ]},
+ { src: "3.png", description: "Digital Horror", url: "3.html", stars: 3, options: [
+ { text: "Red Ver.", url: "3.html" },
+ { text: "Blue Ver.", url: "analog horror.html" }
+ ]},
+ { src: "4.png", description: "Jamais Vu", url: "metro skydome.html", stars: 2, options: [
+ { text: "Bright Ver.", url: "skydome.html" },
+ { text: "Dark Ver.", url: "metro skydome.html" }
+ ]},
+ { src: "5.png", description: "Uncanny Valley", url: "https://example.com/page5", stars: 4, options: [
+ { text: "Exhibition", url: "5_exhibition.html" },
+ { text: "Experience", url: "bug.html" }
+ ]},
+ { src: "6.png", description: "Mysophobia", url: "unclear.html", stars: 2 }
+ ];
+const centerX = window.innerWidth / 2;
+const centerY = window.innerHeight / 2;
+const radius = 320; // 원형 배치 반경 키움
+// Function to create stars
+function createStars(container, count) {
+for (let i = 0; i < count; i++) {
+const star = document.createElement("div");
+star.classList.add("star");
+container.appendChild(star);
+ }
+ }
+// Create choice buttons for images with options
+function createChoiceButtons(img, x, y, options, isLeftSide) {
+const buttonsContainer = document.createElement("div");
+buttonsContainer.classList.add("choice-buttons");
+// Position buttons with the image centered between them
+// Calculate total width of buttons to center the image properly
+buttonsContainer.style.left = `${x - 40}px`; // 이미지 중앙 기준으로 조정
+buttonsContainer.style.top = `${y + 180}px`; // 버튼 위치 더 아래로 조정
+// Create buttons for each option
+options.forEach(option => {
+const button = document.createElement("button");
+button.classList.add("choice-btn");
+button.textContent = option.text;
+button.addEventListener("click", () => {
+showOverlayAndRedirect(option.url);
+ });
+buttonsContainer.appendChild(button);
+ });
+document.body.appendChild(buttonsContainer);
+return buttonsContainer;
+ }
+function createFloatingImages() {
+imageSources.forEach((data, index) => {
+const angle = (index / imageSources.length) * Math.PI * 2;
+const x = centerX + radius * Math.cos(angle) - 60; // 이미지 시작 위치 조정
+const y = centerY + radius * Math.sin(angle) - 60; // 이미지 시작 위치 조정
+// 수정된 부분: 이미지 번호에 따라 왼쪽/오른쪽 결정
+const isLeftSide = [3, 4, 5].includes(index + 1); // 3.png, 4.png, 5.png는 왼쪽에
+const img = document.createElement("img");
+img.src = data.src;
+img.classList.add("floating-image");
+img.style.left = `${x}px`;
+img.style.top = `${y}px`;
+img.dataset.index = index; // Store index for reference
+// 모든 이미지에 대해 일정한 간격 설정
+const descriptionDistance = 170; // 모든 이미지에 대해 일정한 거리
+// Create and position description box
+const descriptionBox = document.createElement("div");
+descriptionBox.classList.add("description-box");
+descriptionBox.textContent = "";
+// 모든 이미지에 대해 동일한 간격으로 설정
+if (isLeftSide) {
+descriptionBox.style.left = `${x - descriptionDistance}px`; // 왼쪽에 description box
+ } else {
+descriptionBox.style.left = `${x + descriptionDistance}px`; // 오른쪽에 description box
+ }
+descriptionBox.style.top = `${y + 10}px`; // description box 위치 조정
+document.body.appendChild(img);
+document.body.appendChild(descriptionBox);
+// Create stars container - 별 위치 수정
+const starsContainer = document.createElement("div");
+starsContainer.classList.add("stars-container");
+starsContainer.style.left = `${x + 55}px`; // 별을 이미지 중앙에 위치
+starsContainer.style.top = `${y - 25}px`; // 별을 이미지 위에 위치
+createStars(starsContainer, data.stars); // Create specified number of stars
+document.body.appendChild(starsContainer);
+// Create buttons for images with options but keep them hidden initially
+let choiceButtons = null;
+if (data.options && data.options.length > 0) {
+choiceButtons = createChoiceButtons(img, x, y, data.options, isLeftSide);
+ }
+img.addEventListener("mouseover", () => {
+showDescriptionBox(descriptionBox, data.description);
+// Show stars when hovering over image
+gsap.to(starsContainer, { opacity: 1, duration: 0.3 });
+ });
+img.addEventListener("mouseout", () => {
+hideDescriptionBox(descriptionBox);
+// Hide stars when not hovering
+gsap.to(starsContainer, { opacity: 0, duration: 0.3 });
+// Hide choice buttons if they exist and it's not clicked
+if (choiceButtons && !img.dataset.clicked) {
+gsap.to(choiceButtons, { opacity: 0, duration: 0.3 });
+ }
+ });
+img.addEventListener("click", () => {
+if (data.options && data.options.length > 0) {
+// Show the choice buttons with animation when image with options is clicked
+if (choiceButtons) {
+// Hide any other active buttons first
+document.querySelectorAll('.floating-image').forEach(image => {
+if (image !== img && image.dataset.clicked === 'true') {
+image.dataset.clicked = false;
+const index = image.dataset.index;
+const otherButtons = document.querySelectorAll('.choice-buttons')[index];
+if (otherButtons) {
+gsap.to(otherButtons, { opacity: 0, duration: 0.3 });
+ }
+ }
+ });
+img.dataset.clicked = true;
+gsap.to(choiceButtons, { opacity: 1, duration: 0.5 });
+// Add a click event to document to hide buttons when clicking elsewhere
+const hideOnClickOutside = (e) => {
+if (!choiceButtons.contains(e.target) && e.target !== img) {
+gsap.to(choiceButtons, { opacity: 0, duration: 0.3 });
+img.dataset.clicked = false;
+document.removeEventListener('click', hideOnClickOutside);
+ }
+ };
+// Add the event listener with a delay to prevent immediate triggering
+setTimeout(() => {
+document.addEventListener('click', hideOnClickOutside);
+ }, 10);
+ }
+ } else {
+showOverlayAndRedirect(data.url);
+ }
+ });
+animateFloatingImage(img, x, y);
+ });
+ }
+function animateDonut(particles) {
+// Animation logic can be added here if needed
+ }
+function animateFloatingImage(img, baseX, baseY) {
+gsap.to(img, {
+x: () => Math.random() * 40 - 20, // 움직임 범위 키움
+y: () => Math.random() * 40 - 20, // 움직임 범위 키움
+duration: 2 + Math.random(),
+yoyo: true,
+repeat: -1,
+ease: "sine.inOut"
+ });
+ }
+function showOverlayAndRedirect(url) {
+const overlay = document.getElementById("overlay");
+const koreanText = document.getElementById("korean-text");
+const englishText = document.getElementById("english-text");
+koreanText.textContent = "";
+englishText.textContent = "";
+overlay.style.display = "flex";
+overlay.style.opacity = 0;
+gsap.to(overlay, { opacity: 1, duration: 3, ease: "power2.inOut" });
+let koreanMessage = "본 콘텐츠에는 강한 시각적 효과와 불안감을 유발하는 요소가 포함될 수 있습니다.\n시청에 주의해 주세요.";
+let englishMessage = "This content contains strong visual effects and elements that may cause anxiety.\nPlease watch with caution.";
+// 3.png 관련 URL인 경우 추가 경고문 포함
+if (url === "3.html" || url === "analog horror.html") {
+koreanMessage = "본 콘텐츠에는 강한 시각적 효과와 불안감을 유발하는 요소가 포함될 수 있습니다.\n시청에 주의해 주세요.\n광과민성 증후군이 있으신 분께서는 특히 관람에 주의하시기 바랍니다.";
+englishMessage = "This content contains strong visual effects and elements that may cause anxiety.\nPlease watch with caution.\nPeople with photosensitive epilepsy should be particularly cautious when viewing.";
+}
+// 타이핑 속도를 조금 늦춤 (10ms → 20ms)
+typeTextSimultaneously(koreanText, koreanMessage, englishText, englishMessage, () => {
+setTimeout(() => {
+gsap.to(overlay, { opacity: 0, duration: 2, onComplete: () => {
+window.location.href = url;
+ }});
+ }, 1000);
+ });
+ }
+function typeTextSimultaneously(koreanElement, koreanText, englishElement, englishText, callback) {
+koreanElement.style.fontSize = '25px'; // 더 크게 설정
+koreanElement.style.fontWeight = '200'; // 더 얇게 설정
+koreanElement.style.whiteSpace = 'pre-line';
+englishElement.style.fontSize = '23px'; // 더 크게 설정
+englishElement.style.fontWeight = '200'; // 더 얇게 설정
+englishElement.style.whiteSpace = 'pre-line';
+let koreanIndex = 0;
+let englishIndex = 0;
+let isComplete = false;
+// 타이핑 속도를 조금 늦춤 (10ms → 20ms)
+const typeInterval = 14;
+function typeKorean() {
+if (koreanIndex < koreanText.length) {
+koreanElement.innerHTML += koreanText[koreanIndex];
+koreanIndex++;
+setTimeout(typeKorean, typeInterval);
+ } else if (!isComplete && englishIndex >= englishText.length) {
+isComplete = true;
+if (callback) callback();
+ }
+ }
+function typeEnglish() {
+if (englishIndex < englishText.length) {
+englishElement.innerHTML += englishText[englishIndex];
+englishIndex++;
+setTimeout(typeEnglish, typeInterval);
+ } else if (!isComplete && koreanIndex >= koreanText.length) {
+isComplete = true;
+if (callback) callback();
+ }
+ }
+// Start typing both simultaneously
+typeKorean();
+typeEnglish();
+ }
+function showDescriptionBox(descriptionBox, text) {
+descriptionBox.style.display = "block";
+descriptionBox.textContent = "";
+gsap.to(descriptionBox, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5 });
+typeDescription(descriptionBox, text, 0);
+ }
+function hideDescriptionBox(descriptionBox) {
+gsap.to(descriptionBox, { opacity: 0, scale: 0.8, filter: "blur(10px)", duration: 0.5 });
+ }
+function typeDescription(element, text, index) {
+if (index < text.length) {
+element.textContent += text[index];
+setTimeout(() => typeDescription(element, text, index + 1), 50);
+ }
+ }
+createFloatingImages();
+function resetParticles() {
+// 더 부드러운 입자 사라짐 효과
+particles.forEach(particle => {
+// 각 입자를 무작위 시간에 페이드아웃
+const delay = Math.random() * 1.5; // 0-1.5초 사이 무작위 지연
+const duration = 1.5 + Math.random(); // 1.5-2.5초 사이 무작위 지속 시간
+// 입자가 서서히 축소되면서 사라지도록
+gsap.to(particle.scale, {
+x: 0.01,
+y: 0.01,
+z: 0.01,
+delay: delay,
+duration: duration,
+ease: "power2.out"
+});
+// 투명도 감소와 함께 색상도 서서히 변경
+gsap.to(particle.material, {
+opacity: 0,
+delay: delay,
+duration: duration,
+ease: "power2.out",
+onComplete: () => {
+scene.remove(particle);
+}
+});
+});
+ 
+// 모든 입자가 페이드아웃된 후 배열 비우기 및 새 입자 생성
+setTimeout(() => {
+particles.length = 0;
+createAndAnimateDonuts();
+}, 4000); // 더 긴 시간 설정하여 모든 입자가 사라질 충분한 시간 확보
+ }
+// 20초마다 리셋 실행
+setInterval(resetParticles, 15000);
+</script>
+</body>
+</html>

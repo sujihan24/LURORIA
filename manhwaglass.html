@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>만화경 효과 웹</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #1a202c;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .kaleidoscope-container {
+            position: relative;
+            width: 800px;
+            height: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .triangle {
+            position: absolute;
+            width: 100px;
+            height: 87px;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 1s ease-in-out;
+        }
+        img {
+            width: 200%;
+            height: 200%;
+            object-fit: cover;
+            transform: translate(-25%, -25%) rotate(0deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>만화경 효과 웹</h1>
+    <div class="controls">
+        <input type="file" id="imageUpload" accept="image/*">
+        <input type="range" id="patternScale" min="1" max="5" step="0.1" value="2" onchange="updateKaleidoscope()">
+    </div>
+    <div class="kaleidoscope-container" id="kaleidoscopeContainer"></div>
+    <script>
+        let imageSrc = '';
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageSrc = e.target.result;
+                    updateKaleidoscope();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateKaleidoscope() {
+            const container = document.getElementById('kaleidoscopeContainer');
+            const scale = document.getElementById('patternScale').value;
+            container.innerHTML = '';
+            const size = 100;
+            const height = size * Math.sqrt(3) / 2;
+            for (let row = 0; row < scale * 3; row++) {
+                for (let col = 0; col < scale * 3; col++) {
+                    let triangle = document.createElement('div');
+                    triangle.className = 'triangle';
+                    let xOffset = col * size * 0.75;
+                    let yOffset = row * height;
+                    if (col % 2 !== 0) yOffset += height / 2;
+                    triangle.style.left = `${xOffset}px`;
+                    triangle.style.top = `${yOffset}px`;
+                    triangle.style.transform = `rotate(${(row + col) % 2 === 0 ? 0 : 180}deg)`;
+                    if (imageSrc) {
+                        let img = document.createElement('img');
+                        img.src = imageSrc;
+                        triangle.appendChild(img);
+                    }
+                    container.appendChild(triangle);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

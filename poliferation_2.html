@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증식하는 것들</title>
+    <style>
+        body {
+            background: black;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .entity {
+            position: absolute;
+            width: 20px; /* 크기 조정 (처음부터 중간 크기) */
+            height: 20px;
+            background: radial-gradient(circle, red, darkred);
+            border-radius: 50%;
+            opacity: 0;
+            animation: grow 3s infinite alternate ease-in-out;
+        }
+
+        /* 개체가 점점 커지는 효과 (더 큰 변화) */
+        @keyframes grow {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(2.5); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        /* 깜빡이는 문구 */
+        .blinking-text {
+            position: absolute;
+            top: 10%;
+            color: red;
+            font-size: 24px;
+            font-family: "Courier New", monospace;
+            text-align: center;
+            white-space: pre-line;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Back 버튼 */
+        /* Back 버튼 */
+#back-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    background: transparent;
+    border: 2px solid red; /* 테두리 두께 감소 */
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    z-index: 10;
+}
+
+#back-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px red;
+}
+
+/* 버튼 안의 삼각형 (왼쪽을 바라보게 회전) */
+#back-button::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-right: 16px solid red; /* 방향을 반대로 변경 */
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+    </style>
+</head>
+<body>
+    <audio id="bgm" loop autoplay>
+        <source src="loop-air-bubbles-159283.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <!-- 깜빡이는 문구 -->
+    <div class="blinking-text">
+        Unidentifiable things are multiplying. <br> Click! Click!!
+    </div>
+
+    <!-- Back 버튼 -->
+    <button id="back-button"></button>
+
+    <div class="container" id="container"></div>
+
+    <script>
+        let entities = [];
+        const maxCount = 400; // 최대 개체 수 제한 (증가)
+        const container = document.getElementById("container");
+        const bgm = document.getElementById("bgm");
+        const backButton = document.getElementById("back-button");
+
+        document.addEventListener('click', (event) => {
+            // Back 버튼 위에서는 개체 생성 안되게
+            const rect = backButton.getBoundingClientRect();
+            if (
+                event.clientX >= rect.left && event.clientX <= rect.right &&
+                event.clientY >= rect.top && event.clientY <= rect.bottom
+            ) {
+                return;
+            }
+
+            bgm.play();
+            createBurst(event.clientX, event.clientY);
+        });
+
+        function createEntity(x, y) {
+            if (entities.length >= maxCount) {
+                let oldestEntity = entities.shift(); // 가장 오래된 개체 삭제
+                container.removeChild(oldestEntity);
+            }
+
+            let entity = document.createElement("div");
+            entity.classList.add("entity");
+            entity.style.left = `${x}px`;
+            entity.style.top = `${y}px`;
+            container.appendChild(entity);
+            
+            setTimeout(() => {
+                entity.style.opacity = 1;
+            }, 50);
+
+            entities.push(entity);
+        }
+
+        function createBurst(x, y) {
+            for (let i = 0; i < 18; i++) {  // 클릭 시 더 많은 개체 생성
+                let offsetX = (Math.random() - 0.5) * 100;
+                let offsetY = (Math.random() - 0.5) * 100;
+                createEntity(x + offsetX, y + offsetY);
+            }
+        }
+
+        function startAutoGeneration() {
+            if (entities.length < maxCount) {
+                createEntity(
+                    Math.random() * window.innerWidth,
+                    Math.random() * window.innerHeight
+                );
+            }
+            setTimeout(startAutoGeneration, Math.random() * 300);
+        }
+
+        startAutoGeneration();
+
+        // Back 버튼 클릭 시 이동
+        backButton.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+    </script>
+</body>
+</html>

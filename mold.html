@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mold Growth 2D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: black; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <canvas id="moldCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("moldCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let molds = [];
+        let globalSpread = 0;
+
+        function addMold(event) {
+            const x = event.clientX;
+            const y = event.clientY;
+            const type = Math.random();
+            let colorStops;
+            
+            if (type < 0.33) {
+                colorStops = ['#002200', '#004400', '#007700', '#00aa00', '#00ff00']; // 녹색 계열
+            } else if (type < 0.66) {
+                colorStops = ['#554400', '#887700', '#bbaa00', '#ddbb66', '#ffee99']; // 황색 계열
+            } else {
+                colorStops = ['#003366', '#006699', '#0099cc', '#00b3ff', '#00e6ff']; // 푸른색 계열
+            }
+            
+            molds.push({ 
+                x, 
+                y, 
+                size: 5, 
+                colorStops, 
+                opacity: 1, 
+                expanding: true, 
+                growthRate: Math.random() * 5 + 3,  // 성장 속도 더욱 증가
+                wobble: Math.random() * 5, 
+                hairs: Array.from({ length: Math.random() * 100 + 50 }, () => ({
+                    angle: Math.random() * Math.PI * 2,
+                    length: Math.random() * 10 + 3,
+                    thickness: Math.random() * 0.8 + 0.2
+                }))
+            });
+        }
+
+        function drawMold(mold) {
+            const gradient = ctx.createRadialGradient(mold.x, mold.y, mold.size * 0.1, mold.x, mold.y, mold.size);
+            gradient.addColorStop(0, mold.colorStops[0]);
+            gradient.addColorStop(0.15, mold.colorStops[1]);
+            gradient.addColorStop(0.4, mold.colorStops[2]);
+            gradient.addColorStop(0.7, mold.colorStops[3]);
+            gradient.addColorStop(1, mold.colorStops[4]);
+            
+            ctx.beginPath();
+            ctx.arc(mold.x + Math.sin(globalSpread * 0.1) * mold.wobble, mold.y + Math.cos(globalSpread * 0.1) * mold.wobble, mold.size + globalSpread * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.globalAlpha = mold.opacity * 0.9;
+            ctx.shadowBlur = mold.size * 1.2;
+            ctx.shadowColor = mold.colorStops[3];
+            ctx.fill();
+            
+            // 곰팡이 표면 털 효과
+            ctx.globalAlpha = mold.opacity * 0.8;
+            for (let hair of mold.hairs) {
+                const hx = mold.x + Math.cos(hair.angle) * (mold.size + hair.length);
+                const hy = mold.y + Math.sin(hair.angle) * (mold.size + hair.length);
+                ctx.beginPath();
+                ctx.moveTo(mold.x + Math.cos(hair.angle) * mold.size, mold.y + Math.sin(hair.angle) * mold.size);
+                ctx.lineTo(hx, hy);
+                ctx.strokeStyle = mold.colorStops[2];
+                ctx.lineWidth = hair.thickness;
+                ctx.stroke();
+            }
+        }
+
+        function growMolds() {
+            // 캔버스를 지우지 않고 곰팡이만 다시 그리기
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            globalSpread += 0.06;
+            for (let mold of molds) {
+                if (mold.expanding && mold.size < 350) {  // 곰팡이 최대 크기 증가
+                    mold.size += Math.random() * mold.growthRate;
+                }
+                drawMold(mold);
+            }
+
+            requestAnimationFrame(growMolds);  // 애니메이션 최적화
+        }
+
+        function onMouseMove(event) {
+            for (let mold of molds) {
+                const dx = event.clientX - mold.x;
+                const dy = event.clientY - mold.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mold.size) {
+                    mold.expanding = false;
+                    mold.size *= 0.98;
+                    mold.opacity *= 0.98;
+                }
+            }
+        }
+
+        function spreadMold() {
+            if (Math.random() < 0.2) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                addMold({ clientX: x, clientY: y });
+            }
+            setTimeout(spreadMold, 3000);
+        }
+
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        document.addEventListener("click", addMold);
+        document.addEventListener("mousemove", onMouseMove);
+        growMolds();
+        spreadMold();
+    </script>
+</body>
+</html>

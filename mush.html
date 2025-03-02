@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>꿈틀거리는 곰팡이</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body style="margin: 0; background: #000; overflow: hidden;">
+    <script id="vertexShader" type="x-shader/x-vertex">
+        uniform float time;
+        varying vec3 vNormal;
+        void main() {
+            vec3 newPosition = position + normal * sin(time + position.x * 2.0) * 0.1;
+            vNormal = normal;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        varying vec3 vNormal;
+        void main() {
+            float intensity = dot(normalize(vNormal), vec3(0.0, 0.0, 1.0));
+            gl_FragColor = vec4(0.3, 0.8, 0.3, 1.0) * intensity;
+        }
+    </script>
+
+    <script>
+        let scene, camera, renderer, sphere, clock;
+        let fragments = [];
+        let exploded = false;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0, 3);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+            createSphere();
+
+            animate();
+
+            window.addEventListener('click', explodeSphere);
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function createSphere() {
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent
+            });
+
+            sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+        }
+
+        function explodeSphere() {
+            if (exploded) return;
+            exploded = true;
+            scene.remove(sphere);
+
+            const geometry = new THREE.SphereGeometry(1, 8, 8); // 조각이 많아짐
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent
+            });
+
+            const positions = geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 9) {
+                const fragmentGeometry = new THREE.BufferGeometry();
+                const vertices = new Float32Array([
+                    positions[i], positions[i + 1], positions[i + 2],
+                    positions[i + 3], positions[i + 4], positions[i + 5],
+                    positions[i + 6], positions[i + 7], positions[i + 8]
+                ]);
+                fragmentGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+                const fragment = new THREE.Mesh(fragmentGeometry, material);
+                let direction = new THREE.Vector3(vertices[0], vertices[1], vertices[2]).normalize();
+                fragment.userData.velocity = direction.multiplyScalar(Math.random() * 0.05 + 0.02); // 랜덤한 방향으로 확산
+
+                scene.add(fragment);
+                fragments.push(fragment);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            let elapsedTime = clock.getElapsedTime();
+            
+            if (sphere) {
+                sphere.material.uniforms.time.value = elapsedTime;
+            }
+
+            fragments.forEach(fragment => {
+                fragment.position.add(fragment.userData.velocity);
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        init();
+    </script>
+</body>
+</html>
+

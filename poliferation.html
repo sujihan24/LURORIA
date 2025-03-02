@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기괴한 왜곡된 얼굴들</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@latest/dist/gsap.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+
+        /* 슬라이더 스타일 */
+       /* 슬라이더 스타일 */
+/* 슬라이더 스타일 */
+#slider {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 250px;  /* 슬라이더 크기 확대 */
+    height: 12px;  /* 슬라이더 두께 증가 */
+    -webkit-appearance: none;
+    appearance: none;
+    background: #00E5FF; /* 형광 하늘색 */
+    border-radius: 6px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+#slider:hover {
+    opacity: 1;
+    transform: scale(1.05); /* 호버 시 살짝 커지는 효과 */
+}
+
+/* 슬라이더 썸네일 (핸들) */
+#slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;  /* 핸들 크기 확대 */
+    height: 24px; 
+    background: white;
+    border: 3px solid #00E5FF;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+#slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);  /* 호버 시 더 커지는 효과 */
+    background: #00E5FF; /* 호버 시 색상 반전 */
+    border: 3px solid white;
+}
+
+#slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: white;
+    border: 3px solid #00E5FF;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+#slider::-moz-range-thumb:hover {
+    transform: scale(1.3);
+    background: #00E5FF;
+    border: 3px solid white;
+}
+
+
+
+        #back-button {
+    position: fixed;
+    bottom: 20px;  /* 하단 여백 */
+    left: 20px;    /* 좌측 여백 */
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    color: white;
+    background: transparent;
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+#back-button:hover {
+    box-shadow: 0 0 10px white;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+    </style>
+</head>
+<body>
+    <input type="range" id="slider" min="1" max="70" value="1">
+    
+    <button id="back-button">◀</button>
+
+    <!-- 배경음악 추가 -->
+    <audio id="background-music" loop>
+        <source src="advanced-machinery-warbles-29998.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // 배경음악 자동 재생
+        const music = document.getElementById('background-music');
+        music.play();
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        function playMusic() {
+        music.play().catch(error => {
+            console.log("자동 재생이 차단되었습니다. 사용자 상호작용이 필요합니다.");
+        });
+        document.removeEventListener('click', playMusic); // 한 번만 실행되도록 제거
+    }
+    document.addEventListener('click', playMusic); // 클릭 시 음악 재생
+
+
+        // 강력한 조명 설정 (더 크고 많은 Point Light 추가)
+        const lights = [];
+        for (let i = 0; i < 7; i++) {
+            const light = new THREE.PointLight(0xFFFFFF, 3, 100);
+            light.position.set(
+                Math.random() * 20 - 10, // X
+                Math.random() * 20 - 10, // Y
+                Math.random() * 20 - 10  // Z
+            );
+            scene.add(light);
+            lights.push(light);
+        }
+
+        const light5 = new THREE.AmbientLight(0xFFFFFF, 0.6); // 부드러운 환경 조명 추가
+        scene.add(light5);
+
+        // 사람 얼굴 형태 생성 (좀 더 사실적인 형태로 수정)
+        const faceGeometry = new THREE.SphereGeometry(3, 32, 32);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xffc0cb,
+            roughness: 0.8,  // 표면 거칠기 설정
+            metalness: 0.8,  // 금속성 설정
+            emissive: 0x885555,
+            flatShading: false, // 부드러운 표면 처리
+            wireframe: false
+        });
+
+        // 눈, 코, 입 생성 함수
+        function createEye(position) {
+            const eyeGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+            const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+            const eye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            eye.position.set(position.x, position.y, position.z);
+            return eye;
+        }
+
+        function createNose() {
+            const noseGeometry = new THREE.ConeGeometry(0.5, 1.5, 32);
+            const noseMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+            nose.rotation.x = Math.PI / 2;
+            nose.position.set(0, 1, 3);
+            return nose;
+        }
+
+        function createMouth() {
+            const mouthGeometry = new THREE.SphereGeometry(0.7, 16, 16, 0, Math.PI, 0, Math.PI / 2);
+            const mouthMaterial = new THREE.MeshStandardMaterial({ color: 0x8b0000 });
+            const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+            mouth.position.set(0, -1.2, 2.5);
+            return mouth;
+        }
+        
+
+        // 얼굴 배열 및 초기 생성
+        let faces = [];
+        let mouseHover = false;  // 마우스 호버 상태 추적
+        let originalPositions = [];
+
+        function createFaces(numFaces) {
+            faces.forEach(face => scene.remove(face)); // 기존 얼굴 제거
+            faces = [];
+            originalPositions = [];
+
+            const spreadFactor = Math.max(10, numFaces * 2); // 개수에 맞게 얼굴 간 간격 조정
+            
+            for (let i = 0; i < numFaces; i++) {
+                const face = new THREE.Mesh(faceGeometry, material);
+                const scale = Math.max(0.5, 30 / (numFaces + 5)); // 얼굴 크기 조정
+                face.scale.set(scale, scale, scale);
+
+                // 랜덤 위치 배치
+                face.position.x = (Math.random() - 0.5) * spreadFactor;
+                face.position.y = (Math.random() - 0.5) * spreadFactor;
+                face.position.z = (Math.random() - 0.5) * spreadFactor;
+
+                // 눈, 코, 입 추가
+                const leftEye = createEye({ x: -1, y: 1, z: 2.5 });
+                const rightEye = createEye({ x: 1, y: 1, z: 2.5 });
+                const nose = createNose();
+                const mouth = createMouth();
+
+                face.add(leftEye);
+                face.add(rightEye);
+                face.add(nose);
+                face.add(mouth);
+
+                faces.push(face);
+                scene.add(face);
+                
+                // 원래 위치 저장
+                originalPositions.push(face.position.clone());
+            }
+        }
+
+        // 얼굴 갯수에 따라 동적으로 생성
+        const slider = document.getElementById("slider");
+        slider.addEventListener("input", (event) => {
+            const numFaces = parseInt(event.target.value, 10);
+            createFaces(numFaces);
+        });
+
+        // 초기 얼굴 생성
+        createFaces(1);
+
+        // 얼굴 애니메이션
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 각 얼굴에 대해 왜곡된 변형 적용
+            faces.forEach((face, index) => {
+                face.rotation.x += 0.01;
+                face.rotation.y += 0.01;
+
+                // 얼굴의 크기와 위치를 주기적으로 왜곡하여 기괴한 느낌을 줌
+                face.scale.x = 1 + Math.sin(Date.now() * 0.005 + index) * 0.5;
+                face.scale.y = 1 + Math.cos(Date.now() * 0.005 + index) * 0.5;
+                face.scale.z = 1 + Math.sin(Date.now() * 0.003 + index) * 0.5;
+
+                // 얼굴이 움직이거나 흔들리게 하여 더 기괴한 느낌을 추가
+                face.position.x += Math.sin(Date.now() * 0.003 + index) * 0.05;
+                face.position.y += Math.cos(Date.now() * 0.003 + index) * 0.05;
+                face.position.z += Math.sin(Date.now() * 0.003 + index) * 0.05;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // 카메라 위치 설정
+        camera.position.z = 40;
+
+        
+        // 마우스 호버 시 얼굴들이 뭉치는 효과 추가
+        window.addEventListener("mousemove", (event) => {
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            if (mouseHover) {
+                const moveFactor = 1.5; // 마우스 호버 시 얼굴들이 뭉치는 강도
+                faces.forEach((face, index) => {
+                    const moveX = mouseX * moveFactor + Math.cos(Math.random() * Math.PI * 2) * 2;
+                    const moveY = mouseY * moveFactor + Math.sin(Math.random() * Math.PI * 2) * 2;
+                    const moveZ = Math.random() * 5 - 3;
+
+                    gsap.to(face.position, {
+                        x: moveX,
+                        y: moveY,
+                        z: moveZ,
+                        duration: 0.3,
+                        ease: "power1.out"
+                    });
+                });
+            }
+        });
+
+        // 마우스를 떼었을 때 얼굴들이 원위치로 돌아가도록 설정
+        window.addEventListener("mouseup", () => {
+            mouseHover = false;
+
+            faces.forEach((face, index) => {
+                gsap.to(face.position, {
+                    x: originalPositions[index].x,
+                    y: originalPositions[index].y,
+                    z: originalPositions[index].z,
+                    duration: 2,
+                    ease: "power2.inOut"
+                });
+            });
+        });
+
+        // 마우스를 누를 때 얼굴들이 뭉치도록 설정
+        window.addEventListener("mousedown", () => {
+            mouseHover = true;
+        });
+
+        // 창 크기 변경 시 카메라 및 렌더러 업데이트
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('sky.jpg', function(texture) {
+            scene.background = texture;
+        });
+
+        document.getElementById('back-button').addEventListener('click', function() {
+           window.location.href = 'index.html'; // mainpage.html로 이동
+         });
+
+    </script>
+</body>
+</html>
