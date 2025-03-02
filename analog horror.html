@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>불길한 웹</title>
+  <style>
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes distortion {
+      0% { transform: scale(1) skew(0deg, 0deg); }
+      25% { transform: scale(1.2) skew(15deg, 10deg); }
+      50% { transform: scale(0.8) skew(-15deg, -10deg); }
+      75% { transform: scale(1.3) skew(20deg, 15deg); }
+      100% { transform: scale(1) skew(0deg, 0deg); }
+    }
+    @keyframes screen-flicker {
+      0%, 100% { filter: brightness(100%); }
+      50% { filter: brightness(40%); }
+    }
+    @keyframes glitch-text {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; transform: translateX(2px) skewX(10deg); }
+      100% { opacity: 1; }
+    }
+    @keyframes code-type {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    @keyframes glitchy-flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes wave-effect {
+      0% { transform: translateX(-100%) translateY(0); }
+      50% { transform: translateX(0) translateY(10px); }
+      100% { transform: translateX(100%) translateY(0); }
+    }
+    @keyframes noise-flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    body {
+      background-color: black;
+      color: red;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      text-align: center;
+      position: relative;
+      padding-top: 20px;
+      animation: screen-flicker 0.3s infinite;
+      image-rendering: pixelated;
+      font-size: 16px;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .static {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('static.gif') repeat;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.3;
+      animation: noise-flicker 0.1s infinite;
+    }
+
+    .eyes-container {
+      position: fixed;
+      top: 10%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .eye {
+      width: 30px;
+      height: 30px;
+      background: red;
+      border-radius: 50%;
+      margin: 5px;
+      position: relative;
+      overflow: hidden;
+      animation: distortion 5s infinite;
+    }
+
+    .eyelid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      transform-origin: center;
+      animation: glitch-text 1s infinite;
+    }
+
+    .broken-element {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      color: red;
+      font-size: 25px;
+      transform: rotate(45deg) translate(-50%, -50%);
+      font-family: monospace;
+      animation: distortion 2s infinite;
+    }
+
+    .blue-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: blue;
+      color: white;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: glitchy-flicker 4s infinite 2s;
+      font-family: monospace;
+    }
+
+    .code-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: #00FFFF;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      white-space: nowrap;
+      z-index: 500;
+      pointer-events: none;
+      animation: noise-flicker 0.2s infinite;
+      animation-duration: 10s;
+    }
+
+    .code {
+      position: absolute;
+      color: #00FFFF;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      white-space: nowrap;
+      animation: code-type 5s steps(50) 1s infinite;
+      pointer-events: none;
+    }
+
+    .error {
+      color: red;
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      animation: glitch-text 0.3s infinite;
+    }
+
+    .broken-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('broken_screen.png') repeat;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.7;
+      animation: noise-flicker 0.3s infinite;
+    }
+
+    .tv-rainbow-stripes {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 10%;
+      animation: tv-rainbow-stripes 5s infinite;
+      z-index: 1000;
+      opacity: 0.7;
+    }
+
+    .image-grid {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      z-index: 999;
+      opacity: 0;
+      animation: image-fade 10s infinite;
+    }
+
+    .image-grid img {
+      width: 100%;
+      height: auto;
+      display: block;
+      animation: image-appear 3s ease-out infinite;
+    }
+
+    @keyframes image-appear {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes image-fade {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitch-line {
+      0% { transform: translateX(0); opacity: 0.8; }
+      25% { transform: translateX(-5px); opacity: 0.6; }
+      50% { transform: translateX(5px); opacity: 0.4; }
+      75% { transform: translateX(-3px); opacity: 0.7; }
+      100% { transform: translateX(0); opacity: 0.8; }
+    }
+
+    .glitch-line {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      background: black;
+      z-index: 9999;
+      animation: glitch-line 0.2s infinite;
+    }
+
+    /* Back button (Triangle) */
+    .back-button {
+      position: fixed;
+      left: 20px;
+      bottom: 100px; /* 위치를 더 올림 */
+      width: 0;
+      height: 0;
+      border-left: 50px solid transparent; /* 삼각형의 크기 조정 */
+      border-right: 50px solid transparent; /* 삼각형의 크기 조정 */
+      border-top: 50px solid blue; /* 삼각형의 크기 조정 */
+      transform: rotate(180deg); /* 버튼을 180도 회전 */
+      cursor: pointer;
+      z-index: 10000;
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* 호버 시 glow 효과 */
+    .back-button:hover {
+      box-shadow: 0 0 30px blue; /* 삼각형 모양에 맞는 glow 효과 */
+    }
+    
+
+
+  </style>
+</head>
+<body>
+  <div class="eyes-container" id="eyes"></div>
+  <div class="broken-element">40404040404040404040404;:FORBIDDEN</div>
+  <div class="blue-screen"></div>
+  <div class="static"></div>
+  <div class="code-background" id="code-background"></div>
+  <div class="code-background-long">
+    <p>&lt;div class="error"&gt;ERROR: 0xDEADBEAF&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xBADC0DE&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xFACEF00D&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xFEEDBEEF&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0x8BADF00D&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xC0FFEE00&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xDEADC0DE&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xF00DF00D&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xBADBAD01&lt;/div&gt;</p>
+    <p>&lt;div class="error"&gt;ERROR: 0xABCD1234&lt;/div&gt;</p>
+  </div>
+  <div class="broken-screen"></div>
+  <div class="tv-rainbow-stripes"></div>
+
+  <div class="image-grid" id="image-grid">
+    <img src="blueface.png" alt="Image 1" class="blueface-image">
+    <img src="blueface.png" alt="Image 2" class="blueface-image">
+    <img src="blueface.png" alt="Image 3" class="blueface-image">
+    <img src="blueface.png" alt="Image 4" class="blueface-image">
+    <img src="blueface.png" alt="Image 5" class="blueface-image">
+    <img src="blueface.png" alt="Image 6" class="blueface-image">
+    <img src="blueface.png" alt="Image 7" class="blueface-image">
+    <img src="blueface.png" alt="Image 8" class="blueface-image">
+    <img src="blueface.png" alt="Image 9" class="blueface-image">
+    <img src="blueface.png" alt="Image 10" class="blueface-image">
+    <img src="blueface.png" alt="Image 11" class="blueface-image">
+    <img src="blueface.png" alt="Image 12" class="blueface-image">
+  </div>
+
+  <div class="back-button" onclick="window.location.href='index.html'"></div>
+
+  <script>
+
+    // Function to toggle images between blueface.png and bf.png
+    function toggleImages() {
+      const images = document.querySelectorAll('.blueface-image');
+      setInterval(() => {
+        images.forEach(img => {
+          img.src = img.src.includes('blueface.png') ? 'bf.png' : 'blueface.png';
+        });
+      }, 300); // 300ms마다 이미지 전환
+    }
+    toggleImages();
+
+    function createGlitchLines() {
+      const body = document.body;
+      for (let i = 0; i < 13; i++) {
+        let line = document.createElement('div');
+        line.className = 'glitch-line';
+        line.style.top = `${Math.random() * 100}vh`;
+        line.style.height = `${Math.random() * 10 + 1}px`;
+        line.style.animationDuration = `${Math.random() * 0.5 + 0.1}s`;
+        body.appendChild(line);
+      }
+    }
+    createGlitchLines();
+
+    function createEyes() {
+      const eyesContainer = document.getElementById('eyes');
+      for (let i = 0; i < 200; i++) {
+        let eye = document.createElement('div');
+        eye.className = 'eye';
+        let eyelid = document.createElement('div');
+        eyelid.className = 'eyelid';
+        eye.appendChild(eyelid);
+        eyesContainer.appendChild(eye);
+      }
+    }
+    createEyes();
+
+    function createDistortion() {
+      setInterval(() => {
+        document.body.classList.toggle('glitch');
+      }, 5000);
+    }
+    createDistortion();
+
+    function createGlitchingText() {
+      setInterval(() => {
+        let glitchText = document.createElement('div');
+        glitchText.className = 'popup';
+        glitchText.innerText = '코드 오류 감지됨: #!$@^&*(...)';
+        glitchText.style.animation = 'glitch-text 0.5s infinite';
+        document.body.appendChild(glitchText);
+        setTimeout(() => glitchText.remove(), 4000);
+      }, 5000);
+    }
+    createGlitchingText();
+
+    function createRandomCode() {
+      setInterval(() => {
+        const code = document.createElement('div');
+        code.className = 'code';
+        code.innerText = `<div class="error">ERROR: 0xDEADBEAF</div>`;
+        code.style.top = Math.random() * 80 + '%';
+        code.style.left = Math.random() * 100 + '%';
+        document.body.appendChild(code);
+        setTimeout(() => code.remove(), 4000);
+      }, 4000);
+    }
+    createRandomCode();
+
+    function createWaveEffect() {
+      setInterval(() => {
+        document.body.style.animation = 'wave-effect 1000s infinite';
+      }, 10000);
+    }
+    createWaveEffect();
+
+    function createImageGrid() {
+      const imageGrid = document.getElementById('image-grid');
+      imageGrid.style.opacity = 1;
+      setInterval(() => {
+        imageGrid.style.opacity = 0;
+        setTimeout(() => imageGrid.style.opacity = 1, 3000);
+      }, 5000); 
+    }
+    createImageGrid();
+
+    function showErrorWindows() {
+      const body = document.body;
+      const imageUrl = 'error window.png';
+    
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          let img = document.createElement('img');
+          img.src = imageUrl;
+          img.style.position = 'fixed';
+          img.style.left = `${20 + i * 50}px`;
+          img.style.top = `${20 + i * 50}px`;
+          img.style.width = '400px';
+          img.style.height = 'auto';
+          img.style.zIndex = '10000';
+          body.appendChild(img);
+        }, i * 300);
+      }
+    }
+
+    setTimeout(showErrorWindows, 5000);
+  </script>
+</body>
+</html>

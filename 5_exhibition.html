@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Exhibition</title>
+    <style>
+        /* 전체 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Courier New', monospace; /* 폰트 설정 */
+        }
+
+        /* 기본 노이즈 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('noise.png');
+            opacity: 0.1;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            animation: noiseMove 0.3s infinite linear;
+        }
+
+        @keyframes noiseMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-1px, 1px); }
+        }
+
+        /* CRT TV 효과 */
+        .crt {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('scanline.png');
+            mix-blend-mode: soft-light;
+            opacity: 0.15;
+            animation: crtFlicker 0.12s infinite, verticalShake 0.15s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.15; }
+            50% { opacity: 0.2; }
+            100% { opacity: 0.15; }
+        }
+
+        @keyframes verticalShake {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1px); }
+        }
+
+        /* 이미지 갤러리 */
+        .gallery {
+            position: relative;
+            width: 500px;
+            height: 650px;
+            overflow: hidden;
+            filter: contrast(120%) brightness(90%);
+        }
+
+        /* 개별 이미지 컨테이너 */
+        .image-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            opacity: 0;
+            transform: scale(1.02);
+        }
+
+        /* 활성화된 이미지 */
+        .active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 깨짐 효과 */
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('glitch.png');
+            opacity: 0;
+            mix-blend-mode: difference;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 버튼 컨테이너 */
+        .controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* 버튼 공통 스타일 */
+        button {
+            background: none;
+            border: none;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        /* 삼각형 버튼 스타일 */
+        .prev::before, .next::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .prev::before {
+            border-width: 20px 30px 20px 0;
+            border-color: transparent white transparent transparent;
+            left: 10px;
+        }
+
+        .next::before {
+            border-width: 20px 0 20px 30px;
+            border-color: transparent transparent transparent white;
+            right: 10px;
+        }
+
+        /* 버튼 hover 시 삼각형 Glow 효과 */
+        .prev:hover::before, .next:hover::before {
+            filter: drop-shadow(0px 0px 10px rgba(0, 102, 255, 0.8));
+        }
+
+        /* 텍스트 애니메이션 */
+        .intro-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            opacity: 0;
+            animation: fadeInOut 4s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 음악 -->
+    <audio id="bgm" loop>
+        <source src="clock-noise-188047.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 불쾌한 골짜기 텍스트 -->
+    <div class="intro-text">Images causing Uncanny Valley. Please change the photos to the beat.</div>
+
+    <div class="gallery">
+        <div class="image-container active"><img src="img1.png" alt="Image 1"></div>
+        <div class="image-container"><img src="img2.png" alt="Image 2"></div>
+        <div class="image-container"><img src="img3.png" alt="Image 3"></div>
+        <div class="image-container"><img src="img4.png" alt="Image 4"></div>
+        <div class="image-container"><img src="img5.png" alt="Image 5"></div>
+        <div class="image-container"><img src="img6.png" alt="Image 6"></div>
+        <div class="image-container"><img src="img7.png" alt="Image 7"></div>
+        <div class="image-container"><img src="img8.png" alt="Image 8"></div>
+        <div class="image-container"><img src="img9.png" alt="Image 9"></div>
+        <div class="image-container"><img src="img10.png" alt="Image 10"></div>
+        <div class="image-container"><img src="img11.png" alt="Image 11"></div>
+        <div class="image-container"><img src="img12.png" alt="Image 12"></div>
+        <div class="image-container"><img src="img13.png" alt="Image 13"></div>
+        <div class="image-container"><img src="img14.png" alt="Image 14"></div>
+        <div class="image-container"><img src="img15.png" alt="Image 15"></div>
+        <div class="image-container"><img src="img16.png" alt="Image 16"></div>
+    </div>
+
+    <!-- 깨짐 효과 -->
+    <div class="glitch"></div>
+    <div class="crt"></div>
+
+    <!-- 컨트롤 버튼 -->
+    <div class="controls">
+        <button class="prev" onclick="prevImage()"></button>
+        <button class="next" onclick="nextImage()"></button>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const images = document.querySelectorAll(".image-container");
+        const glitchEffect = document.querySelector(".glitch");
+        const gallery = document.querySelector(".gallery");
+        const bgm = document.getElementById("bgm");
+
+        function showImage(index) {
+            glitchEffect.style.animation = "glitchEffect 0.3s";
+            gallery.style.animation = "rgbSplit 0.2s";
+
+            setTimeout(() => { 
+                glitchEffect.style.animation = ""; 
+                gallery.style.animation = "";
+            }, 300);
+
+            images.forEach((img, i) => {
+                img.classList.remove("active");
+                if (i === index) {
+                    img.classList.add("active");
+                }
+            });
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(currentIndex);
+            playBGM();
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage(currentIndex);
+            playBGM();
+        }
+
+        function playBGM() {
+            if (bgm.paused) {
+                bgm.play();
+            }
+        }
+    </script>
+</body>
+</html>
