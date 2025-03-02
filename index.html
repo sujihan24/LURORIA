@@ -406,7 +406,7 @@ buttonsContainer.classList.add("choice-buttons");
 buttonsContainer.style.left = `${x + 65}px`; // 이미지 중앙 위치 (이미지 너비의 절반 65px 추가)
 
 // 버튼과 이미지 사이 간격 줄임 - 버튼을 더 위로 올림
-buttonsContainer.style.top = `${y + 140}px`; // 이미지 아래 간격 줄임 (180px에서 140px로 변경)
+buttonsContainer.style.top = `${y + 160}px`; // 이미지 아래 간격 줄임 (180px에서 140px로 변경)
 
 // Create buttons for each option
 options.forEach(option => {
@@ -439,7 +439,7 @@ let descriptionDistance = 170; // 기본 거리
 
 // 각 이미지별 description box 거리 조정
 if (index === 2) { // 3.png (Digital Horror)
-  descriptionDistance = 190; // 더 멀리 배치 (너무 가까운 것 수정)
+  descriptionDistance = 210; // 더 멀리 배치 (너무 가까운 것 수정)
 } else if (index === 3) { // 4.png (Jamais Vu)
   descriptionDistance = 190; // 더 가깝게 배치 (너무 멀었던 것 수정)
 } else if (index === 4) { // 5.png
