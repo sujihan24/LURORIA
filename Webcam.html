@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코 없애고 동공 키우는 AR</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <style>
+        body { text-align: center; background-color: white; }
+        video, canvas { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        video { display: none; }
+    </style>
+</head>
+<body>
+    <h1>코 없애고 동공 키우는 AR</h1>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        async function setupCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            return new Promise(resolve => video.onloadedmetadata = resolve);
+        }
+
+        async function loadFaceMesh() {
+            const faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
+            faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true });
+
+            faceMesh.onResults(results => draw(results));
+            return faceMesh;
+        }
+
+        async function start() {
+            await setupCamera();
+            video.play();
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const faceMesh = await loadFaceMesh();
+
+            async function detect() {
+                await faceMesh.send({ image: video });
+                requestAnimationFrame(detect);
+            }
+
+            detect();
+        }
+
+        function draw(results) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
+            const landmarks = results.multiFaceLandmarks[0];
+
+            // 🎯 코 없애기 (블러 효과 적용)
+            removeNose(landmarks);
+
+            // 🎯 동공 확대
+            enlargePupil(landmarks[468], 1.8);  // 왼쪽 동공
+            enlargePupil(landmarks[473], 1.8);  // 오른쪽 동공
+        }
+
+        function removeNose(landmarks) {
+            // 코 영역 좌표 설정
+            const noseTop = landmarks[1];  
+            const noseLeft = landmarks[2];  
+            const noseRight = landmarks[4]; 
+            const noseBottom = landmarks[6]; 
+
+            const x = noseLeft.x * canvas.width;
+            const y = noseTop.y * canvas.height;
+            const width = (noseRight.x - noseLeft.x) * canvas.width;
+            const height = (noseBottom.y - noseTop.y) * canvas.height;
+
+            // 💡 캔버스 필터를 활용한 빠른 블러 처리
+            ctx.filter = "blur(10px)";  // 블러 강도 조절 가능
+            ctx.drawImage(video, x, y, width, height, x, y, width, height);
+            ctx.filter = "none";  // 필터 초기화
+        }
+
+        function enlargePupil(pupil, scale) {
+            const px = pupil.x * canvas.width;
+            const py = pupil.y * canvas.height;
+            const size = 10 * scale;
+
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(px, py, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        start();
+    </script>
+</body>
+</html>

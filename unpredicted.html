@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P5.js Spreading Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <button id="backButton"></button>
+    <style>
+        .button-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .control-button {
+            background: white;
+            color: black;
+            border: none;
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .control-button:hover {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        body {
+            cursor: none;
+            margin: 0; /* 기본 여백 제거 */
+            padding: 0; /* 기본 패딩 제거 */
+        }
+        #backButton {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid white;
+            background: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+            opacity: 0.7;
+        }
+
+        #backButton:hover {
+            transform: scale(1.1);
+            opacity: 1;
+            filter: drop-shadow(-2px 0px 6px rgba(255, 255, 255, 0.8));
+        }
+
+        body, button, a, input, textarea {
+            cursor: none !important;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="control-button" onclick="startAnimation(1)">1</button>
+        <button class="control-button" onclick="startAnimation(2)">2</button>
+        <button class="control-button" onclick="startAnimation(3)">3</button>
+        <button class="control-button" onclick="startAnimation(4)">4</button>
+        <button class="control-button" onclick="startAnimation(5)">5</button>
+        <button class="control-button" onclick="startAnimation(6)">6</button>
+    </div>
+    <script>
+        let strands = [];
+        let numStrands = 200;
+        let variation = 1;
+        let cursorImg;
+        let backgroundMusic;
+
+        function preload() {
+            cursorImg = loadImage('index cursor.png'); 
+            // 음악 파일 로드
+            backgroundMusic = new Audio('elegant-glitchy-introduction-66418.mp3');
+            backgroundMusic.loop = true; // 반복 재생 설정
+            backgroundMusic.volume = 0.5; // 볼륨 설정
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            background(0);
+            // 페이지 로드 시 음악을 시작하지 않음
+        }
+
+        function draw() {
+            background(0, 15);  // 화면을 항상 검은색으로 덮음
+            for (let strand of strands) {
+                strand.update();
+                strand.display();
+            }
+            drawCursor();
+        }
+
+        function drawCursor() {
+            imageMode(CENTER);
+            image(cursorImg, mouseX, mouseY, 50, 50); // 정확한 커서 위치
+        }
+
+        class Strand {
+            constructor(x, y) {
+                this.history = [];
+                this.pos = createVector(x, y);
+                this.vel = p5.Vector.random2D().mult(random(0.5, 1.5));
+                this.noiseOffset = random(1000);
+            }
+
+            update() {
+                this.history.push(this.pos.copy());
+                if (this.history.length > 80) this.history.shift();
+                
+                if (variation === 1) {
+                    this.vel.rotate(random(-0.15, 0.15));
+                    this.vel.mult(1.01);
+                } else if (variation === 2) {
+                    this.vel.rotate(sin(frameCount * 0.02) * 0.3);
+                    this.vel.mult(1.005);
+                } else if (variation === 3) {
+                    this.vel.rotate(sin(frameCount * 0.1) * 1.5);
+                    this.vel.mult(1.02);
+                    if (frameCount % 20 === 0) {
+                        this.vel = p5.Vector.random2D().mult(random(2, 7));
+                    }
+                } else if (variation === 4) {
+                    this.vel.rotate(sin(frameCount * 0.04) * 1.2);
+                    this.vel.mult(1.015);
+                    if (frameCount % 30 === 0 && strands.length < 350) {
+                        strands.push(new Strand(this.pos.x, this.pos.y));
+                    }
+                } else if (variation === 5) {
+                    this.vel.rotate(noise(this.noiseOffset) * PI - PI / 2);
+                    this.vel.mult(1.01);
+                    this.noiseOffset += 0.012;
+                } else if (variation === 6) {
+                    this.vel.rotate(sin(frameCount * 0.04) * 2.5);
+                    this.vel.mult(1.015);
+                    if (frameCount % 15 === 0 && strands.length < 450) {
+                        strands.push(new Strand(random(width), random(height)));
+                    }
+                }
+                
+                this.pos.add(this.vel);
+            }
+
+            display() {
+                noFill();
+                stroke(255, 120);
+                strokeWeight(1);
+                beginShape();
+                for (let v of this.history) {
+                    curveVertex(v.x, v.y);
+                }
+                endShape();
+            }
+        }
+
+        function startAnimation(type) {
+            // 음악을 사용자 인터랙션 시에 시작하도록 설정
+            if (backgroundMusic.paused) {
+                backgroundMusic.play(); // 첫 클릭 시 음악 시작
+            }
+
+            variation = type;
+            strands = [];
+            for (let i = 0; i < numStrands; i++) {
+                strands.push(new Strand(width / 2, height / 2));
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        document.getElementById("backButton").addEventListener("click", function() {
+            window.location.href = "index.html"; // ✅ 'index.html'로 이동
+        });
+    </script>
+</body>
+</html>
