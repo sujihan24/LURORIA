@@ -509,32 +509,7 @@ setTimeout(() => typeDescription(element, text, index + 1), 50);
  }
  }
 createFloatingImages();
-function resetParticles() {
-// 더 부드러운 입자 사라짐 효과
-particles.forEach(particle => {
-// 각 입자를 무작위 시간에 페이드아웃
-const delay = Math.random() * 1.5; // 0-1.5초 사이 무작위 지연
-const duration = 1.5 + Math.random(); // 1.5-2.5초 사이 무작위 지속 시간
-// 입자가 서서히 축소되면서 사라지도록
-gsap.to(particle.scale, {
-x: 0.01,
-y: 0.01,
-z: 0.01,
-delay: delay,
-duration: duration,
-ease: "power2.out"
-});
-// 투명도 감소와 함께 색상도 서서히 변경
-gsap.to(particle.material, {
-opacity: 0,
-delay: delay,
-duration: duration,
-ease: "power2.out",
-onComplete: () => {
-scene.remove(particle);
-}
-});
-});
+
  
 // 모든 입자가 페이드아웃된 후 배열 비우기 및 새 입자 생성
 setTimeout(() => {
@@ -543,7 +518,7 @@ createAndAnimateDonuts();
 }, 2000); // 더 긴 시간 설정하여 모든 입자가 사라질 충분한 시간 확보
  }
 // 20초마다 리셋 실행
-setInterval(resetParticles, 1000);
+setInterval(resetParticles, 12000);
 </script>
 </body>
 </html>
