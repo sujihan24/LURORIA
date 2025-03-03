@@ -136,7 +136,7 @@
 
         /* 모든 버튼에 호버 효과 추가 */
         button:hover {
-            filter: drop-shadow(0px 0px 10px rgba(0, 102, 255, 0.8));
+            filter: drop-shadow(0px 0px 20px rgb(255, 255, 255));
         }
 
         /* 삼각형 버튼 스타일 */
@@ -185,20 +185,33 @@
             100% { opacity: 0; }
         }
 
-        /* 홈 버튼 추가 */
-        .home-button {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 24px;
-            color: white;
-            text-decoration: none;
-            transition: filter 0.3s;
-        }
-        
-        .home-button:hover {
-            filter: drop-shadow(0px 0px 10px rgba(0, 102, 255, 0.8));
-        }
+        /* 홈 버튼 수정 - 심플한 < 버튼 */
+        /* 홈 버튼 스타일 */
+.home-button {
+    position: absolute;
+    bottom: 50px; /* 아래쪽에서 더 띄움 */
+    left: 50px; /* 왼쪽에서 더 띄움 */
+    font-size: 40px; /* 폰트 크기 증가 */
+    font-weight: bold;
+    color: #FFE4C4; /* 살색(Bisque) */
+    text-decoration: none;
+    transition: all 0.3s ease;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px; /* 너비 증가 */
+    height: 45px; /* 높이 증가 */
+}
+
+.home-button:hover {
+    filter: drop-shadow(0px 0px 20px rgba(255, 228, 196, 1)); /* 글로우 효과 강화 */
+    color: #000; /* 호버 시 텍스트 색상 검정으로 변경 */
+    background-color: #FFE4C4; /* 호버 시 배경색 살색으로 변경 */
+    transform: scale(1.1); /* 크기 확대 효과 증가 */
+    box-shadow: 0 0 25px rgba(255, 228, 196, 0.8); /* 추가 그림자 효과 */
+    border-color: #FFF; /* 테두리 색상 변경 */
+}
     </style>
 </head>
 <body>
@@ -239,8 +252,8 @@
         <button class="next" onclick="nextImage()"></button>
     </div>
 
-    <!-- 홈 버튼 추가 - index.html로 연결 -->
-    
+    <!-- 홈 버튼 추가 - index.html로 연결 (body 안에 올바르게 배치) -->
+    <a href="index.html" class="home-button">&lt;</a>
 
     <script>
         let currentIndex = 0;
@@ -285,21 +298,22 @@
         }
 
         let inactivityTime = 10000; // 10초
-let inactivityTimer;
+        let inactivityTimer;
 
-function resetInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-        window.location.href = "index.html";
-    }, inactivityTime);
-}
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                window.location.href = "index.html";
+            }, inactivityTime);
+        }
 
-// 마우스 움직임, 키 입력, 클릭이 감지되면 타이머 초기화
-document.addEventListener("mousemove", resetInactivityTimer);
-document.addEventListener("keydown", resetInactivityTimer);
-document.addEventListener("click", resetInactivityTimer);
-
-
+        // 마우스 움직임, 키 입력, 클릭이 감지되면 타이머 초기화
+        document.addEventListener("mousemove", resetInactivityTimer);
+        document.addEventListener("keydown", resetInactivityTimer);
+        document.addEventListener("click", resetInactivityTimer);
+        
+        // 페이지 로드 시 타이머 초기화
+        window.addEventListener("load", resetInactivityTimer);
     </script>
 </body>
 </html>
