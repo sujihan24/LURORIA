@@ -245,21 +245,19 @@
     .back-button {
       position: fixed;
       left: 20px;
-      bottom: 100px; /* 위치를 더 올림 */
+      bottom: 80px;
       width: 0;
       height: 0;
-      border-left: 50px solid transparent; /* 삼각형의 크기 조정 */
-      border-right: 50px solid transparent; /* 삼각형의 크기 조정 */
-      border-top: 50px solid blue; /* 삼각형의 크기 조정 */
-      transform: rotate(180deg); /* 버튼을 180도 회전 */
+      border-top: 30px solid transparent;
+      border-bottom: 30px solid transparent;
+      border-right: 40px solid blue;
       cursor: pointer;
       z-index: 10000;
       transition: box-shadow 0.3s ease;
     }
 
-    /* 호버 시 glow 효과 */
     .back-button:hover {
-      box-shadow: 0 0 30px blue; /* 삼각형 모양에 맞는 glow 효과 */
+      box-shadow: 0 0 20px blue;
     }
     
 
@@ -271,6 +269,7 @@
   <div class="broken-element">40404040404040404040404;:FORBIDDEN</div>
   <div class="blue-screen"></div>
   <div class="static"></div>
+  <div class="back-button" onclick="window.location.href='index.html'"></div>
   <div class="code-background" id="code-background"></div>
   <div class="code-background-long">
     <p>&lt;div class="error"&gt;ERROR: 0xDEADBEAF&lt;/div&gt;</p>
@@ -412,6 +411,29 @@
     }
 
     setTimeout(showErrorWindows, 5000);
+
+    let inactivityTime = 8000; // 16초
+let inactivityTimer;
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        window.location.href = "index.html";
+    }, inactivityTime);
+}
+
+// 마우스 움직임, 키 입력, 클릭이 감지되면 타이머 초기화
+document.addEventListener("mousemove", resetInactivityTimer);
+document.addEventListener("keydown", resetInactivityTimer);
+document.addEventListener("click", resetInactivityTimer);
+
+// 페이지가 로드될 때 처음 타이머 시작
+
+// 페이지가 로드될 때 처음 타이머 시작
+resetInactivityTimer();
+
   </script>
+  
 </body>
+
 </html>

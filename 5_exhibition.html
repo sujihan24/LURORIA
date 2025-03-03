@@ -240,7 +240,7 @@
     </div>
 
     <!-- 홈 버튼 추가 - index.html로 연결 -->
-    <a href="index.html" class="home-button">&lt;</a>
+    
 
     <script>
         let currentIndex = 0;
@@ -283,6 +283,23 @@
                 bgm.play();
             }
         }
+
+        let inactivityTime = 10000; // 10초
+let inactivityTimer;
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        window.location.href = "index.html";
+    }, inactivityTime);
+}
+
+// 마우스 움직임, 키 입력, 클릭이 감지되면 타이머 초기화
+document.addEventListener("mousemove", resetInactivityTimer);
+document.addEventListener("keydown", resetInactivityTimer);
+document.addEventListener("click", resetInactivityTimer);
+
+
     </script>
 </body>
 </html>

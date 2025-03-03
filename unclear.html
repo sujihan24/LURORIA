@@ -277,6 +277,23 @@ document.addEventListener("contextmenu", (event) => {
         
         growMolds();
         spreadMold();
+
+        let inactivityTime = 10000; // 30초
+        let inactivityTimer;
+
+        function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            window.location.href = "index.html";
+        }, inactivityTime);
+    }
+
+        // 마우스 움직임 또는 키보드 입력이 감지되면 타이머 초기화
+        document.addEventListener("mousemove", resetInactivityTimer);
+        document.addEventListener("keydown", resetInactivityTimer);
+
+    // 페이지가 로드될 때 처음 타이머 시작
+    resetInactivityTimer();
     </script>
 </body>
 </html>
