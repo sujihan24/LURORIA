@@ -13,10 +13,10 @@
         /* 향상된 슬라이더 스타일 */
         #slider {
             position: fixed;
-            bottom: 20px;
+            bottom: 50px;
             right: 20px;
             width: 300px;
-            height: 20px;
+            height: 10px;
             -webkit-appearance: none;
             appearance: none;
             background: linear-gradient(to right, #000000, #ffffff);
@@ -48,7 +48,7 @@
         }
 
         #slider::-webkit-slider-thumb:hover {
-            transform: scale(1.3);
+            transform: scale(1.0);
             background: #000000;
             border: 3px solid white;
             box-shadow: 0 0 20px rgb(104, 104, 104);
@@ -308,7 +308,7 @@
         function createBeam() {
             const beamGeometry = new THREE.CylinderGeometry(5, 1, 20, 32, 1, true);
             const beamMaterial = new THREE.MeshBasicMaterial({
-                color: 0x00E5FF,
+                color: 0xFFFFFF,
                 transparent: true,
                 opacity: 0.3, // 불투명도 낮춤 (0.5에서 0.3으로)
                 side: THREE.DoubleSide
@@ -362,9 +362,7 @@
         const backgroundImages = [
             'sky.jpg',
             'galaxy.jpg',
-            'forest.jpg',
-            'ocean.jpg',
-            'desert.jpg'
+            
         ];
         let currentBackgroundIndex = 0;
 
