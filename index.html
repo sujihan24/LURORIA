@@ -12,171 +12,170 @@ body { margin: 0; overflow: hidden; background: black; display: flex; justify-co
 canvas { display: block; }
 /* 텍스트 스타일 수정 */
 .overlay-text {
-font-family: 'Diphylleia', sans-serif;
-font-size: 25px;
-font-weight: lighter;
-line-height: 3.0;
-white-space: pre-line;
-color: white;
- }
+  font-family: 'Diphylleia', sans-serif;
+  font-size: 32px; /* 아이맥용 크기 증가 */
+  font-weight: lighter;
+  line-height: 3.0;
+  white-space: pre-line;
+  color: white;
+}
 .center-text {
-position: absolute;
-color: white;
-font-family: 'Courier New', monospace;
-font-size: 56px; /* 크기 키움 */
-font-weight: normal;
-text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);
-animation: irregularGlow 4s infinite alternate ease-in-out;
- }
+  position: absolute;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 76px; /* 아이맥용 크기 증가 */
+  font-weight: normal;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);
+  animation: irregularGlow 4s infinite alternate ease-in-out;
+}
 .overlay-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-text-align: center;
- }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 .overlay-text {
-font-family: 'Gulim', sans-serif;
-font-size: 25px; /* 크기 더 키움 */
-font-weight: 200; /* 더 얇게 설정 */
-line-height: 2.5;
-white-space: pre-line;
-color: white;
- }
+  font-family: 'Gulim', sans-serif;
+  font-size: 32px; /* 아이맥용 크기 증가 */
+  font-weight: 200;
+  line-height: 2.5;
+  white-space: pre-line;
+  color: white;
+}
 .overlay-text-english {
-font-family: 'Courier New', monospace; /* 폰트 변경 */
-font-size: 23px; /* 크기 더 키움 */
-font-weight: 200; /* 더 얇게 설정 */
-line-height: 2.5;
-white-space: pre-line;
-color: rgba(255, 255, 255, 0.7);
- }
+  font-family: 'Courier New', monospace;
+  font-size: 30px; /* 아이맥용 크기 증가 */
+  font-weight: 200;
+  line-height: 2.5;
+  white-space: pre-line;
+  color: rgba(255, 255, 255, 0.7);
+}
 @keyframes irregularGlow {
- 0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.4); }
- 25% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 25px rgba(255, 255, 255, 0.7); }
- 50% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.5), 0 0 18px rgba(255, 255, 255, 0.3); }
- 75% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.7), 0 0 22px rgba(255, 255, 255, 0.5); }
- 100% { text-shadow: 0 0 9px rgba(255, 255, 255, 0.55), 0 0 19px rgba(255, 255, 255, 0.35); }
- }
+  0% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4); }
+  25% { text-shadow: 0 0 22px rgba(255, 255, 255, 0.9), 0 0 37px rgba(255, 255, 255, 0.7); }
+  50% { text-shadow: 0 0 13px rgba(255, 255, 255, 0.5), 0 0 27px rgba(255, 255, 255, 0.3); }
+  75% { text-shadow: 0 0 18px rgba(255, 255, 255, 0.7), 0 0 33px rgba(255, 255, 255, 0.5); }
+  100% { text-shadow: 0 0 14px rgba(255, 255, 255, 0.55), 0 0 28px rgba(255, 255, 255, 0.35); }
+}
 .floating-image {
-position: absolute;
-width: 130px; /* 크기 키움 */
-height: auto;
-opacity: 1.0;
- }
+  position: absolute;
+  width: 180px; /* 아이맥용 크기 증가 */
+  height: auto;
+  opacity: 1.0;
+}
 .description-box {
-position: absolute;
-background-color: rgba(0, 0, 0, 0);
-color: white;
-font-family: 'Courier New', monospace;
-font-size: 20px; /* 크기 키움 */
-padding: 15px;
-border-radius: 50px;
-display: none;
-opacity: 0;
-transform: scale(0.8);
-box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-filter: blur(10px);
-transition: all 0.5s ease-in-out;
-white-space: nowrap;
- }
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 28px; /* 아이맥용 크기 증가 */
+  padding: 20px;
+  border-radius: 60px;
+  display: none;
+  opacity: 0;
+  transform: scale(0.8);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  filter: blur(10px);
+  transition: all 0.5s ease-in-out;
+  white-space: nowrap;
+}
 #overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.9);
-display: none;
-justify-content: center;
-align-items: center;
-color: white;
-font-family: 'Presentaiton', monospace;
-font-size: 36px;
-text-align: center;
-padding: 20px;
-box-sizing: border-box;
-z-index: 9999;
-font-family: 'Presentation', sans-serif;
-font-size: 36px;
- }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: 'Presentaiton', monospace;
+  font-size: 48px; /* 아이맥용 크기 증가 */
+  text-align: center;
+  padding: 30px;
+  box-sizing: border-box;
+  z-index: 9999;
+  font-family: 'Presentation', sans-serif;
+}
 .options-box {
-position: absolute;
-bottom: 80px;
-left: 50%;
-transform: translateX(-50%);
-color: white;
-font-family: 'Courier New', monospace;
-font-size: 22px; /* 크기 키움 */
-display: none;
-text-align: center;
-z-index: 999;
- }
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 30px; /* 아이맥용 크기 증가 */
+  display: none;
+  text-align: center;
+  z-index: 999;
+}
 .options-box span {
-cursor: pointer;
-margin: 0 20px;
-padding: 12px 20px;
-border: 2px solid white;
-border-radius: 30px;
-transition: all 0.3s ease;
-display: inline-block;
- }
+  cursor: pointer;
+  margin: 0 30px;
+  padding: 15px 25px;
+  border: 2px solid white;
+  border-radius: 40px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
 .options-box span:hover {
-color: #000;
-background-color: #fff;
-box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
- }
+  color: #000;
+  background-color: #fff;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.8);
+}
 .floating-image:hover {
-filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)); /* Glow 효과만 유지 */
-transition: filter 0.5s ease;
- }
-/* Choice buttons styling - 크기 키움 */
+  filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 45px rgba(255, 255, 255, 0.3));
+  transition: filter 0.5s ease;
+}
+/* Choice buttons styling */
 .choice-buttons {
-position: absolute;
-display: flex;
-justify-content: center;
-gap: 20px; /* 간격 넓힘 */
-z-index: 100;
-opacity: 0;
-transition: opacity 0.5s ease;
-transform: translateX(-50%); /* 가운데 정렬을 위해 추가 */
- }
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* 간격 넓힘 */
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  transform: translateX(-50%);
+}
 .choice-btn {
-font-family: 'Courier New', monospace;
-font-size: 16px; /* 크기 키움 */
-color: white;
-background-color: transparent;
-border: 1px solid white;
-border-radius: 20px;
-padding: 8px 18px; /* 패딩 키움 */
-cursor: pointer;
-transition: all 0.3s ease;
- }
+  font-family: 'Courier New', monospace;
+  font-size: 22px; /* 아이맥용 크기 증가 */
+  color: white;
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 30px;
+  padding: 12px 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 .choice-btn:hover {
-color: black;
-background-color: white;
-box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
- }
-/* Stars style - 위치 조정 및 크기 키움 */
+  color: black;
+  background-color: white;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.8);
+}
+/* Stars style */
 .stars-container {
-position: absolute;
-display: flex;
-gap: 10px; /* 간격 넓힘 */
-opacity: 0;
-transition: opacity 0.3s ease;
- }
+  position: absolute;
+  display: flex;
+  gap: 15px; /* 간격 넓힘 */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 .star {
-width: 18px; /* 크기 키움 */
-height: 18px; /* 크기 키움 */
-background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>');
-background-repeat: no-repeat;
-background-size: contain;
-animation: starGlow 1.5s infinite alternate ease-in-out;
- }
+  width: 25px; /* 아이맥용 크기 증가 */
+  height: 25px; /* 아이맥용 크기 증가 */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>');
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: starGlow 1.5s infinite alternate ease-in-out;
+}
 @keyframes starGlow {
-0% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7)); }
-100% { filter: drop-shadow(0 0 7px rgba(255, 255, 255, 1.0)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.7)); }
- }
+  0% { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7)); }
+  100% { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1.0)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)); }
+}
 </style>
 </head>
 <body>
@@ -244,9 +243,9 @@ document.body.appendChild(renderer.domElement);
 
 // 성능 최적화를 위한 변수
 const particles = [];
-const maxParticles = 2500; // 최대 입자 수 제한
+const maxParticles = 3000; // 아이맥용 입자 수 증가
 const particlePool = []; // 재사용할 입자 풀
-const geometry = new THREE.SphereGeometry(0.018, 6, 6); // 입자 해상도 낮춤
+const geometry = new THREE.SphereGeometry(0.025, 6, 6); // 아이맥용 입자 크기 증가
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
 // 입자 생성 및 재사용 함수
@@ -273,13 +272,13 @@ function returnParticle(particle) {
 // 도넛 형태의 입자 그룹 생성
 function createDonut(radiusMultiplier) {
   const donutParticles = [];
-  const count = Math.min(500, maxParticles - particles.length);
+  const count = Math.min(600, maxParticles - particles.length); // 아이맥용 도넛 당 입자 수 증가
   
   if (count <= 0) return donutParticles; // 입자 수 초과시 생성 중단
   
   for (let i = 0; i < count; i++) {
-    const angle = (i % 100) / 100 * Math.PI * 2;
-    const radius = (Math.floor(i / 100) * 0.5 + 1) * radiusMultiplier * 3;
+    const angle = (i % 120) / 120 * Math.PI * 2; // 아이맥용 도넛 밀도 증가
+    const radius = (Math.floor(i / 120) * 0.5 + 1) * radiusMultiplier * 4; // 아이맥용 도넛 크기 증가
     const particle = getParticle();
     particle.position.set(
       Math.cos(angle) * radius, 
@@ -302,12 +301,12 @@ function createAndAnimateDonuts() {
   window.donutInterval = setInterval(() => {
     // 입자 수가 최대치보다 적을 때만 새 도넛 생성
     if (particles.length < maxParticles) {
-      const donut = createDonut(1.5 + Math.random());
+      const donut = createDonut(1.8 + Math.random()); // 아이맥용 크기 조정
       if (donut.length > 0) {
         animateDonut(donut);
       }
     }
-  }, 800); // 생성 간격 늘림
+  }, 800);
 }
 
 // 애니메이션 루프
@@ -348,7 +347,7 @@ function resetParticles() {
 createAndAnimateDonuts();
 animate();
 
-// 입자 리셋 주기 연장 (20초 → 35초)
+// 입자 리셋 주기 연장
 setInterval(resetParticles, 35000);
 
 // 화면 크기 변경 이벤트
@@ -386,7 +385,7 @@ const imageSources = [
 
 const centerX = window.innerWidth / 2;
 const centerY = window.innerHeight / 2;
-const radius = 320; // 원형 배치 반경 키움
+const radius = 450; // 아이맥용 배치 반경 증가
 
 // Function to create stars
 function createStars(container, count) {
@@ -402,11 +401,11 @@ function createChoiceButtons(img, x, y, options, index) {
 const buttonsContainer = document.createElement("div");
 buttonsContainer.classList.add("choice-buttons");
 
-// 이미지 중앙에 버튼을 정렬하기 위해 x 좌표 설정 - 이미지 중앙 좌표 사용
-buttonsContainer.style.left = `${x + 65}px`; // 이미지 중앙 위치 (이미지 너비의 절반 65px 추가)
+// 이미지 중앙에 버튼을 정렬하기 위해 x 좌표 설정
+buttonsContainer.style.left = `${x + 90}px`; // 아이맥용 위치 조정 (이미지 너비의 절반)
 
-// 버튼과 이미지 사이 간격 줄임 - 버튼을 더 위로 올림
-buttonsContainer.style.top = `${y + 160}px`; // 이미지 아래 간격 줄임 (180px에서 140px로 변경)
+// 버튼과 이미지 사이 간격
+buttonsContainer.style.top = `${y + 210}px`; // 아이맥용 위치 조정
 
 // Create buttons for each option
 options.forEach(option => {
@@ -425,8 +424,8 @@ return buttonsContainer;
 function createFloatingImages() {
 imageSources.forEach((data, index) => {
 const angle = (index / imageSources.length) * Math.PI * 2;
-const x = centerX + radius * Math.cos(angle) - 65; // 이미지 중앙 위치 조정
-const y = centerY + radius * Math.sin(angle) - 65; // 이미지 중앙 위치 조정
+const x = centerX + radius * Math.cos(angle) - 90; // 아이맥용 위치 조정
+const y = centerY + radius * Math.sin(angle) - 90; // 아이맥용 위치 조정
 const img = document.createElement("img");
 img.src = data.src;
 img.classList.add("floating-image");
@@ -435,15 +434,15 @@ img.style.top = `${y}px`;
 img.dataset.index = index; // Store index for reference
 
 // 설명창 위치 설정 - 이미지별 거리 조정
-let descriptionDistance = 170; // 기본 거리
+let descriptionDistance = 230; // 아이맥용 기본 거리 증가
 
 // 각 이미지별 description box 거리 조정
 if (index === 2) { // 3.png (Digital Horror)
-  descriptionDistance = 210; // 더 멀리 배치 (너무 가까운 것 수정)
+  descriptionDistance = 330; // 아이맥용 거리 조정 - 280에서 330으로 증가
 } else if (index === 3) { // 4.png (Jamais Vu)
-  descriptionDistance = 190; // 더 가깝게 배치 (너무 멀었던 것 수정)
-} else if (index === 4) { // 5.png
-  descriptionDistance = 220; // 그대로 유지
+  descriptionDistance = 250; // 아이맥용 거리 조정
+} else if (index === 4) { // 5.png (Uncanny Valley)
+  descriptionDistance = 350; // 아이맥용 거리 조정 - 290에서 350으로 증가
 }
 
 // Create and position description box
@@ -458,7 +457,7 @@ if (isLeftSide) {
 } else {
   descriptionBox.style.left = `${x - descriptionDistance}px`; // 왼쪽에 description box
 }
-descriptionBox.style.top = `${y + 10}px`; // 모든 description box에 동일한 간격 적용
+descriptionBox.style.top = `${y + 15}px`; // 아이맥용 간격 조정
 
 document.body.appendChild(img);
 document.body.appendChild(descriptionBox);
@@ -467,8 +466,8 @@ document.body.appendChild(descriptionBox);
 const starsContainer = document.createElement("div");
 starsContainer.classList.add("stars-container");
 // 별을 이미지 중앙 위에 위치시키기 위한 계산
-const starX = x + 65; // 이미지 중앙 X 좌표 (이미지 너비의 절반)
-const starY = y - 30; // 이미지 위쪽 Y 좌표 (고정된 간격)
+const starX = x + 90; // 아이맥용 위치 조정 (이미지 너비의 절반)
+const starY = y - 40; // 아이맥용 위치 조정
 starsContainer.style.left = `${starX}px`; // 별을 이미지 중앙에 위치
 starsContainer.style.top = `${starY}px`; // 별을 이미지 위에 위치
 createStars(starsContainer, data.stars); // Create specified number of stars
@@ -537,8 +536,8 @@ animateFloatingImage(img, x, y);
 
 function animateFloatingImage(img, baseX, baseY) {
 gsap.to(img, {
-x: () => Math.random() * 40 - 20, // 움직임 범위 키움
-y: () => Math.random() * 40 - 20, // 움직임 범위 키움
+x: () => Math.random() * 60 - 30, // 아이맥용 움직임 범위 증가
+y: () => Math.random() * 60 - 30, // 아이맥용 움직임 범위 증가
 duration: 2 + Math.random(),
 yoyo: true,
 repeat: -1,
@@ -562,7 +561,7 @@ if (url === "3.html" || url === "analog horror.html") {
 koreanMessage = "본 콘텐츠에는 강한 시각적 효과와 불안감을 유발하는 요소가 포함될 수 있습니다.\n시청에 주의해 주세요.\n광과민성 증후군이 있으신 분께서는 특히 관람에 주의하시기 바랍니다.";
 englishMessage = "This content contains strong visual effects and elements that may cause anxiety.\nPlease watch with caution.\nPeople with photosensitive epilepsy should be particularly cautious when viewing.";
 }
-// 타이핑 속도를 조금 늦춤 (10ms → 20ms)
+// 타이핑 속도 조정
 typeTextSimultaneously(koreanText, koreanMessage, englishText, englishMessage, () => {
 setTimeout(() => {
 gsap.to(overlay, { opacity: 0, duration: 2, onComplete: () => {
@@ -573,17 +572,17 @@ window.location.href = url;
  }
 
 function typeTextSimultaneously(koreanElement, koreanText, englishElement, englishText, callback) {
-koreanElement.style.fontSize = '25px'; // 더 크게 설정
-koreanElement.style.fontWeight = '200'; // 더 얇게 설정
+koreanElement.style.fontSize = '32px'; // 아이맥용 크기 증가
+koreanElement.style.fontWeight = '200';
 koreanElement.style.whiteSpace = 'pre-line';
-englishElement.style.fontSize = '23px'; // 더 크게 설정
-englishElement.style.fontWeight = '200'; // 더 얇게 설정
+englishElement.style.fontSize = '30px'; // 아이맥용 크기 증가
+englishElement.style.fontWeight = '200';
 englishElement.style.whiteSpace = 'pre-line';
 let koreanIndex = 0;
 let englishIndex = 0;
 let isComplete = false;
-// 타이핑 속도를 조금 늦춤 (10ms → 20ms)
-const typeInterval = 20;
+// 아이맥용 타이핑 속도 조정
+const typeInterval = 25; // 좀 더 느리게
 function typeKorean() {
 if (koreanIndex < koreanText.length) {
 koreanElement.innerHTML += koreanText[koreanIndex];

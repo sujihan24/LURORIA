@@ -35,25 +35,39 @@
       100% { opacity: 0.2; }
     }
     
-    #goBackButton {
-  width: 0;
-  height: 0;
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-right: 40px solid red; /* 왼쪽을 향하는 삼각형 모양 */
-  background: none;
-  cursor: pointer;
-  position: fixed;  /* 변경: 화면에 고정 */
-  bottom: 20px;  /* 좌측 하단에서 20px 떨어진 위치 */
-  left: 20px;    /* 좌측에서 20px 떨어진 위치 */
-  transition: transform 0.3s ease, filter 0.3s ease;
-  z-index: 100; /* 다른 요소 위에 표시되도록 설정 */
-}
+    #back-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            font-size: 0; /* 텍스트 숨기기 */
+            color: rgb(255, 0, 0);
+            background: rgb(0, 0, 0);
+            border: 3px solid rgb(255, 0, 0);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-#goBackButton:hover {
-  transform: scale(1.2);  /* 호버 시 크기 확대 */
-  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)); /* 삼각형 자체에만 글로우 효과 */
-}
+        #back-button:hover {
+            box-shadow: 0 0 30px rgb(255, 0, 0);
+            background: rgba(0, 0, 0, 0.8)
+        }
+
+        /* 뒤로가기 버튼 내부 삼각형 */
+        #back-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid rgb(255, 0, 0);
+            margin-right: 5px; /* 삼각형 위치 조정 */
+        }
 
 
     
@@ -170,7 +184,7 @@
 <body>
   <div contenteditable="true" class="editor" id="editor"></div>
   <div class="placeholder" id="placeholder">Type whatever you want!</div>
-  <button id="goBackButton"></button>
+  <button id="back-button"></button>
   
   <!-- 추가: 배경에 나타날 이미지 (src 속성은 원하는 이미지 URL로 변경) -->
   <img src="skeleton.png" alt="Scary" class="scary-image" id="scaryImage" />
@@ -185,7 +199,7 @@
     let lastTypedText = "";
     let interval;
     
-    document.getElementById("goBackButton").addEventListener("click", function() {
+    document.getElementById("back-button").addEventListener("click", function() {
       window.location.href = "index.html";  // mainpage.html로 리디렉션
     });
 
@@ -367,7 +381,7 @@
   showErrorWindows(); // error 윈도우를 열게 하는 함수
 });
 
-let inactivityTime = 16000; // 16초
+let inactivityTime = 8000; // 8초
 let inactivityTimer;
 
 function resetInactivityTimer() {
