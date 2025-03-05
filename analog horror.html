@@ -243,22 +243,40 @@
 
     /* Back button (Triangle) */
     .back-button {
-      position: fixed;
-      left: 20px;
-      bottom: 80px;
-      width: 0;
-      height: 0;
-      border-top: 30px solid transparent;
-      border-bottom: 30px solid transparent;
-      border-right: 40px solid blue;
-      cursor: pointer;
-      z-index: 10000;
-      transition: box-shadow 0.3s ease;
-    }
+            position: fixed;
+            bottom: 50px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            font-size: 0; /* 텍스트 숨기기 */
+            color: rgb(72, 0, 255);
+            background: rgb(0, 0, 0);
+            border: 3px solid rgb(55, 0, 255);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+    
+   
 
     .back-button:hover {
-      box-shadow: 0 0 20px blue;
+      box-shadow: 0 0 20px rgb(134, 134, 255);
     }
+
+    .back-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid rgb(17, 0, 255);
+            margin-right: 5px; /* 삼각형 위치 조정 */
+        }
     
 
 
@@ -412,7 +430,7 @@
 
     setTimeout(showErrorWindows, 5000);
 
-    let inactivityTime = 8000; // 16초
+    let inactivityTime = 5000; // 16초
 let inactivityTimer;
 
 function resetInactivityTimer() {

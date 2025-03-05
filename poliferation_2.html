@@ -36,8 +36,9 @@
         /* 개체가 점점 커지는 효과 (더 큰 변화) */
         @keyframes grow {
             0% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(2.5); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0.7; }
+            50% { transform: scale(4.0); opacity: 1; }
+
+            100% { transform: scale(1.5); opacity: 0.85; }
         }
 
         /* 깜빡이는 문구 */
@@ -89,6 +90,8 @@
     border-right: 16px solid red; /* 방향을 반대로 변경 */
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
+    margin-right: 5px; /* 삼각형 위치 조정 */
+
 }
 
     </style>
@@ -150,7 +153,7 @@
         }
 
         function createBurst(x, y) {
-            for (let i = 0; i < 18; i++) {  // 클릭 시 더 많은 개체 생성
+            for (let i = 0; i < 23; i++) {  // 클릭 시 더 많은 개체 생성
                 let offsetX = (Math.random() - 0.5) * 100;
                 let offsetY = (Math.random() - 0.5) * 100;
                 createEntity(x + offsetX, y + offsetY);
